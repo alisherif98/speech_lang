@@ -16,7 +16,7 @@ const HAS=/\p{Extended_Pictographic}/u;
 const key=e=>e.replace(/\uFE0F/g,"");
 const FACE=/[\u{1F600}-\u{1F64F}\u{1F910}-\u{1F92F}\u{1F970}-\u{1F97F}\u{1F9D0}\u{1FAE0}-\u{1FAE8}\u{1F44D}\u{1F44E}\u{2639}\u{263A}]/u;
 const PAGE=(location.pathname.split("/").pop()||"index.html").replace(".html","");
-const OFF_PAGES=["emotions","yes-no","index"];
+const OFF_PAGES=["emotions","yes-no","index","where"];
 
 /* ---------- style + credit ---------- */
 const st=document.createElement("style");
@@ -36,11 +36,11 @@ let pickMap={},pickT=0;
 function pickers(){if(Date.now()-pickT<1000)return pickMap;pickT=Date.now();pickMap={};
  try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!k||!k.startsWith("kvPick:"))continue;const s=JSON.parse(localStorage.getItem(k)||"{}");[...(s.sel||[]),...(s.custom||[])].forEach(x=>{if(x&&x.e&&x.w)pickMap[key(x.e)]=x.w;});}}catch(e){}
  return pickMap;}
-const dictWord=e=>{const k=key(e);return pickers()[k]||learned[k]||EXTRA_MAP[k]||LETTERS[k]||null;};
+const dictWord=e=>{const k=key(e);return pickers()[k]||null;};
 const nWords=s=>s.trim().split(/\s+/).filter(Boolean).length;
 
 /* ---------- ARASAAC lookup with cache ---------- */
-const CK="kvPicCache2";let cache={};try{cache=JSON.parse(localStorage.getItem(CK)||"{}");}catch(e){}
+const CK="kvPicCache3";let cache={};try{cache=JSON.parse(localStorage.getItem(CK)||"{}");}catch(e){}
 let saveT;const saveCache=()=>{clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(CK,JSON.stringify(cache));}catch(e){}},400);};
 const inflight={},queue=[];let active=0;
 function run(){while(active<4&&queue.length){const job=queue.shift();active++;job().finally(()=>{active--;run();});}}
@@ -97,7 +97,7 @@ function proc(t){
  if(rest){ if(ems.length===1&&ems[0].index===s.search(/\S/)&&nWords(rest)<=3&&!/[!؟?]/.test(rest))ctx=rest;else return; }
  else if(ems.length===1)ctx=contextFor(p);
  const frag=document.createDocumentFragment();let last=0,any=false;
- for(const m of ems){frag.append(s.slice(last,m.index));const em=m[0],w=FACE.test(em)?null:(ctx||(ems.length===1?dictWord(em):null));
+ for(const m of ems){frag.append(s.slice(last,m.index));const em=m[0],w=FACE.test(em)?null:ctx;
   if(w){const sp=document.createElement("span");sp.className="kvpic";sp.dataset.w=w;sp.dataset.e=em;sp.textContent=em;frag.append(sp);if(ctx)learned[key(em)]=w;swap(sp,w);any=true;}
   else frag.append(em);
   last=m.index+em.length;}
