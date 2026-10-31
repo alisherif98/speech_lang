@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
 <title>ألعاب النطق</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/common.css">
@@ -11,7 +12,7 @@
 <script>KV.header({title:"اسمع واختر",sub:"الثنائيات الصغرى – التمييز السمعي بين الأصوات",icon:"🎧"});
 const PAIRS=[["🐕|كلب","❤️|قلب","ك / ق"],["🗡️|سيف","☀️|صيف","س / ص"],["🌰|تين","🟫|طين","ت / ط"],["🐋|حوت","🫐|توت","ح / ت"],["🍌|موز","🌰|لوز","م / ل"],["🐅|نمر","🌙|قمر","ن / ق"],["✏️|قلم","🚩|علم","ق / ع"],["🐘|فيل","🌃|ليل","ف / ل"],["🐫|جمل","🏖️|رمل","ج / ر"],["🏠|بيت","🫒|زيت","ب / ز"],["🦆|بطة","🐈|قطة","ب / ق"],["🐝|نحلة","🌴|نخلة","ح / خ"],["🧄|ثوم","😴|نوم","ث / ن"],["🚪|باب","🦷|ناب","ب / ن"],["🔥|نار","🐭|فار","ن / ف"],["🌹|ورد","🥶|برد","و / ب"]];
 let hide=localStorage.getItem("kvMPhide")==="1";document.body.classList.toggle("qz-notext",hide);
-const q=KV.quiz({tools:`<button class="ghost" id="tg">${hide?"👁️ إظهار الكلمات":"🙈 إخفاء الكلمات"}</button>`,make:()=>KV.shuffle(PAIRS).slice(0,10).map(p=>{const a=p.map(x=>x.split?x.split("|"):x),k=Math.random()<.5?0:1,t=a[k],o=a[1-k];
+KV.quiz({tools:`<button class="ghost" id="tg">${hide?"👁️ إظهار الكلمات":"🙈 إخفاء الكلمات"}</button>`,make:()=>KV.shuffle(PAIRS).slice(0,10).map(p=>{const a=[p[0].split("|"),p[1].split("|")],k=Math.random()<.5?0:1,t=a[k],o=a[1-k];
  return{pic:"👂",q:"اسمع… أي صورة سمعت؟",say:t[1],silent:true,choices:KV.shuffle([{e:t[0],t:t[1],ok:true},{e:o[0],t:o[1],ok:false}]),ans:t[1],ansEmoji:t[0],sub:`الفرق بين الصوتين: ${p[2]} — قل الكلمتين: ${a[0][1]} / ${a[1][1]} 🗣️`};})});
 KV.$("tg").onclick=()=>{hide=!hide;localStorage.setItem("kvMPhide",hide?"1":"0");document.body.classList.toggle("qz-notext",hide);KV.$("tg").textContent=hide?"👁️ إظهار الكلمات":"🙈 إخفاء الكلمات";};
 KV.bumpPlay("minimal-pairs");

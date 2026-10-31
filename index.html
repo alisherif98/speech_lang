@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
 <title>ألعاب النطق والتخاطب – ألعاب علاج النطق للأطفال</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/common.css">
@@ -34,7 +35,7 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:30px 10px}
  <section class="hero">
   <div><h2>علاج النطق… <span>لكن بطريقة ممتعة!</span> 🎈</h2>
   <p>ألعاب تفاعلية باللغة العربية لتدريب النطق ومخارج الحروف، والتمييز السمعي، وفهم الأسئلة، والمفردات، والمشاعر، وبناء الجمل، واتباع التعليمات. تصلح للأخصائيين والأهل والمعلمين، داخل الجلسة أو عن بُعد.</p>
-  <a class="btn big" href="#games">🎮 تصفّح الألعاب</a></div>
+  <div class="row" style="justify-content:flex-start"><a class="btn big" href="#games">🎮 تصفّح الألعاب</a><button class="ghost" id="soundTest">🔊 اختبر الصوت</button></div></div>
   <div class="hero-art"><span>🎡</span><span style="animation-delay:.2s">🃏</span><span style="animation-delay:.4s">👾</span><br><span style="animation-delay:.6s">🎧</span><span style="animation-delay:.8s">🧪</span><span style="animation-delay:1s">😊</span></div>
  </section>
  <section class="feats">
@@ -53,6 +54,7 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:30px 10px}
 <script>
 KV.header({title:"ألعاب النطق والتخاطب",sub:"ألعاب علاج النطق واللغة للأطفال بالعربية",icon:"🗣️"});
 document.title="ألعاب النطق والتخاطب – ألعاب علاج النطق للأطفال";KV.$("kvHome").remove();
+KV.$("soundTest").onclick=()=>KV.speak("مرحبا! هيا نلعب ونتعلم");
 const G=[
  {id:"sound-spinner",t:"عجلة الأصوات",e:"🎡",c:"#f4a259",cat:"speech",d:"لُف العجلة وقل الكلمة التي اختارتها. كل الحروف العربية الـ28 مع تسجيل صوتك.",tags:["أصوات الكلام","مخارج الحروف"]},
  {id:"matching",t:"لعبة المطابقة",e:"🃏",c:"#7d6bd6",cat:"speech",d:"اقلب بطاقتين وابحث عن الأزواج المتشابهة، وقل الكلمة عند كل مطابقة.",tags:["أصوات الكلام","الذاكرة"]},

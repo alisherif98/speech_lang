@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
 <title>ألعاب النطق</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/common.css">
@@ -22,11 +23,11 @@
 <script src="assets/common.js"></script>
 <script>KV.header({title:"بناء الجمل",sub:"رتّب الكلمات لتكوّن جملة صحيحة",icon:"🧱"});
 const {$}=KV;
-const S={3:[["👦🍎","الولد يأكل التفاحة"],["👧📖","البنت تقرأ الكتاب"],["🐱🥛","القطة تشرب الحليب"],["🐦🌳","العصفور فوق الشجرة"],["👨‍🍳🍲","الطباخ يطبخ الطعام"],["🐶⚽","الكلب يلعب بالكرة"],["👩🚗","أمي تقود السيارة"],["🐟🌊","السمكة تسبح في البحر"],["👶😴","الطفل نائم الآن"],["🌞🔥","الشمس حارة جدًا"]],
-4:[["👦⚽🏟️","الولد يلعب الكرة في الملعب"],["👧🎨🖼️","البنت ترسم صورة جميلة جدًا"],["🐒🍌🌴","القرد يأكل الموز فوق الشجرة"],["👨‍🏫📚🏫","المعلم يشرح الدرس في المدرسة"],["🧒🪥🦷","الطفل يغسل أسنانه كل صباح"],["🐄🥛🚜","البقرة تعطينا الحليب كل يوم"],["👵🍪☕","جدتي تخبز الكعك في المطبخ"],["🐝🌸🍯","النحلة تطير فوق الزهرة الحمراء"]],
-5:[["👦🚲🏞️","الولد يركب الدراجة في الحديقة الكبيرة"],["👧🧸🛏️","البنت تضع الدمية على السرير الصغير"],["👨‍🚒🔥🚒","رجل الإطفاء يطفئ النار بسرعة كبيرة"],["🐱🐭🏠","القطة تجري خلف الفأر في البيت"],["👩‍⚕️🤒💊","الطبيبة تعطي المريض الدواء بعد الفحص"],["🧑‍🌾🥕🌱","المزارع يزرع الجزر في الأرض الخضراء"]]};
+const S={3:[["👦🍎","الولد يأكل التفاحة"],["👧📖","البنت تقرأ الكتاب"],["🐱🥛","القطة تشرب الحليب"],["🐦🌳","العصفور فوق الشجرة"],["👨‍🍳🍲","الطباخ يطبخ الطعام"],["🐶⚽","الكلب يلعب بالكرة"],["👩🚗","أمي تقود السيارة"],["🐟🌊","السمكة تسبح بسرعة"],["👶😴","الطفل نائم الآن"],["🌞🔥","الشمس حارة جدًا"]],
+4:[["👦⚽🏟️","الولد يلعب في الملعب"],["👧🎨🖼️","البنت ترسم صورة جميلة"],["🐒🍌🌴","القرد يأكل الموز الأصفر"],["👨‍🏫📚🏫","المعلم يشرح الدرس للطلاب"],["🧒🪥🦷","الطفل يغسل أسنانه صباحًا"],["🐄🥛🚜","البقرة تعطينا الحليب الطازج"],["👵🍪☕","جدتي تخبز الكعك اللذيذ"],["🐝🌸🍯","النحلة تطير فوق الزهرة"]],
+5:[["👦🚲🏞️","الولد يركب الدراجة في الحديقة"],["👧🧸🛏️","البنت تضع الدمية على السرير"],["👨‍🚒🔥🚒","رجل الإطفاء يطفئ النار بسرعة"],["🐱🐭🏠","القطة تجري خلف الفأر الصغير"],["👩‍⚕️🤒💊","الطبيبة تعطي المريض الدواء المفيد"],["🧑‍🌾🥕🌱","المزارع يزرع الجزر في الأرض"]]};
 let L=+(localStorage.getItem("kvSBL")||4);if(!S[L])L=4;let deck=[],i=0,score=0,line=[],bank=[];
-function make(){KV.hideResume();const pool=S[L].length>=10?S[L]:[...S[L]];deck=KV.shuffle(pool);i=0;score=0;$("score").textContent=0;$("lvl").querySelectorAll("button").forEach(b=>b.classList.toggle("on",+b.dataset.v===L));show();}
+function make(){KV.hideResume();deck=KV.shuffle(S[L]);i=0;score=0;$("score").textContent=0;$("lvl").querySelectorAll("button").forEach(b=>b.classList.toggle("on",+b.dataset.v===L));show();}
 function show(){KV.hideResume();const c=deck[i],words=c[1].split(" ");$("prog").textContent=`${i+1} / ${deck.length}`;
  const p=$("pic");p.textContent=c[0];p.style.animation="none";void p.offsetWidth;p.style.animation="";
  line=[];do{bank=KV.shuffle(words.map((w,k)=>({w,k})));}while(bank.every((b,k)=>b.w===words[k]));$("line").className="line";draw();}
