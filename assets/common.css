@@ -1,0 +1,94 @@
+:root{--bg1:#fdf6e9;--bg2:#f6e7cf;--card:#fffaf1;--ink:#3b2f25;--muted:#8a7562;--accent:#e2683c;--accent2:#2f8f83;--line:#ead8bd;--shadow:0 10px 30px rgba(90,60,30,.15);--good:#3aa66b;--bad:#d64545}
+body.theme-space{--bg1:#1d1b3a;--bg2:#2c2560;--card:#2f2a5c;--ink:#f6f1ff;--muted:#bdb3e6;--accent:#ffb347;--accent2:#6fd3ff;--line:#463f80;--shadow:0 10px 30px rgba(0,0,0,.4)}
+body.theme-autumn{--bg1:#fbeee0;--bg2:#f3d5b5;--card:#fff6ec;--ink:#4a2c17;--muted:#94603a;--accent:#c4501b;--accent2:#7a8b2c;--line:#ecc9a5}
+body.theme-winter{--bg1:#eef6fb;--bg2:#d6e9f5;--card:#f8fcff;--ink:#1f3a4d;--muted:#5d7f95;--accent:#2f7fc1;--accent2:#5ab4a8;--line:#c9deec}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal','Segoe UI',Tahoma,sans-serif;color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100vh;overflow-x:hidden;transition:background .5s;padding-bottom:90px}
+h1,h2,h3{font-family:'Baloo Bhaijaan 2','Tajawal',sans-serif}
+button{font-family:inherit;cursor:pointer;border:none;color:inherit}
+a{color:inherit;text-decoration:none}
+.deco{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.deco span{position:absolute;opacity:.45;animation:kvfall linear infinite}
+@keyframes kvfall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(360deg)}}
+.kv-header{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:14px 22px;gap:12px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo .icon{width:46px;height:46px;border-radius:14px;background:var(--accent);display:grid;place-items:center;font-size:26px;box-shadow:var(--shadow)}
+.logo h1{font-size:25px;line-height:1.1}.logo small{display:block;color:var(--muted);font-size:13px;font-family:'Tajawal'}
+.hbtns{display:flex;gap:8px;flex-wrap:wrap}
+.pill{background:var(--card);color:var(--ink);border:2px solid var(--line);padding:8px 14px;border-radius:999px;font-weight:700;font-size:15px;display:inline-flex;gap:6px;align-items:center;transition:.2s}
+.pill:hover{border-color:var(--accent);transform:translateY(-2px)}
+.pill.stars{background:var(--accent);color:#fff;border-color:transparent}
+main{position:relative;z-index:1;max-width:1100px;margin:auto;padding:4px 18px 30px}
+.panel{background:var(--card);border-radius:26px;box-shadow:var(--shadow);border:2px solid var(--line);padding:20px}
+.center{text-align:center}.muted{color:var(--muted)}
+.btn{background:var(--accent);color:#fff;font-weight:800;padding:12px 28px;border-radius:999px;font-size:20px;box-shadow:0 5px 0 rgba(0,0,0,.18);transition:.15s;font-family:'Baloo Bhaijaan 2','Tajawal';display:inline-block}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.alt{background:var(--accent2)}.btn.big{font-size:26px;padding:14px 50px}
+.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line);padding:9px 18px;border-radius:999px;font-weight:700;font-size:15px;transition:.2s}
+.ghost:hover{border-color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{padding:7px 12px;border-radius:10px;background:var(--bg1);border:2px solid var(--line);color:var(--ink);font-weight:700}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.overlay{position:fixed;inset:0;background:rgba(30,20,10,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:80;padding:14px}
+.overlay.show{display:flex}
+.modal{background:var(--card);color:var(--ink);border-radius:28px;padding:22px;width:min(520px,100%);max-height:92vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:kvpop .35s cubic-bezier(.2,1.4,.4,1)}
+.modal.wide{width:min(780px,100%)}
+@keyframes kvpop{from{transform:scale(.7);opacity:0}}
+.m-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px}
+.m-title{font-family:'Baloo Bhaijaan 2';font-weight:800;font-size:22px;color:var(--accent)}
+.close-x{background:var(--bg1);width:44px;height:44px;flex:0 0 44px;border-radius:50%;font-size:22px;color:var(--ink);border:2px solid var(--line);transition:.2s}
+.close-x:hover{background:var(--accent);color:#fff;transform:rotate(90deg)}
+.m-emoji{font-size:110px;line-height:1.15;text-align:center;animation:kvbounce 1s ease infinite alternate}
+@keyframes kvbounce{to{transform:translateY(-8px)}}
+.m-text{font-size:32px;font-weight:800;margin:6px 0;text-align:center;font-family:'Baloo Bhaijaan 2'}
+.m-text mark{background:none;color:var(--accent);text-decoration:underline wavy;text-underline-offset:10px}
+.m-sub{color:var(--muted);font-size:17px;text-align:center}
+.m-foot{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:2px dashed var(--line)}
+.rb{padding:12px 22px;border-radius:16px;font-size:18px;font-weight:800;color:#fff}
+.rb.next{background:var(--accent);box-shadow:0 5px 0 rgba(0,0,0,.18)}
+.rb.closeb{background:var(--bg1);color:var(--ink);border:2px solid var(--line)}
+.rb.listen{background:var(--accent2)}.rb.good{background:#3aa66b}.rb.again{background:#e5a32b}.rb.rec{background:#7d6bd6}.rb.del{background:#9a8a7a}
+.rb.recording{background:#d63b3b;animation:kvjoy 1s infinite}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px dashed var(--line);gap:10px;flex-wrap:wrap}
+.hint{color:var(--muted);font-size:14px;margin-top:10px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(140px);background:var(--ink);color:var(--card);padding:12px 22px;border-radius:14px;z-index:99;transition:.35s;font-weight:700;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+#kvConfetti{position:fixed;inset:0;pointer-events:none;z-index:90}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{padding:8px 14px;border-radius:12px;background:var(--bg1);color:var(--ink);font-weight:700;border:2px solid var(--line)}
+.tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.letters{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px;margin-bottom:14px}
+.letter{padding:6px 0;border-radius:14px;background:var(--bg1);border:2px solid var(--line);font-size:26px;font-weight:800;font-family:'Baloo Bhaijaan 2';color:var(--ink)}
+.letter.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{padding:8px 12px;border-radius:999px;background:var(--bg1);border:2px solid var(--line);font-weight:700;font-size:16px;color:var(--ink)}
+.chip.on{background:var(--accent2);border-color:var(--accent2);color:#fff}
+.sel-head{display:flex;justify-content:space-between;align-items:center;margin:6px 0 10px;flex-wrap:wrap;gap:8px}
+.add-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.add-row input{flex:1;min-width:120px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--bg1);color:var(--ink);font-family:inherit;font-size:16px}
+.add-row input.em{flex:0 0 74px;min-width:74px;text-align:center}
+@keyframes kvshake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.shake{animation:kvshake .45s}
+@keyframes kvjoy{50%{transform:scale(1.1)}}
+.joy{animation:kvjoy .5s}
+.tries{display:flex;justify-content:center;gap:10px;margin:12px 0 4px}
+.try{width:52px;height:52px;border-radius:50%;border:3px dashed var(--line);font-size:26px;display:grid;place-items:center;background:var(--bg1);transition:.3s}
+.try.ok{border-style:solid;border-color:#f7b538;background:#fff4cf;transform:scale(1.1)}
+/* floating next button after closing a popup */
+.kv-resume{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(170px);z-index:70;transition:transform .35s cubic-bezier(.2,1.4,.4,1);box-shadow:0 6px 0 rgba(0,0,0,.2),0 12px 30px rgba(0,0,0,.25)}
+.kv-resume.show{transform:translateX(-50%) translateY(0);animation:kvpulse 1.6s 1s infinite}
+@keyframes kvpulse{50%{box-shadow:0 6px 0 rgba(0,0,0,.2),0 0 0 12px rgba(226,104,60,.25)}}
+/* generic quiz */
+.qz{max-width:780px;margin:auto;text-align:center}
+.qz-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.qz-pic{font-size:clamp(84px,18vw,140px);line-height:1.15;animation:kvpop .4s;margin:4px 0}
+.qz-pic.small{font-size:clamp(40px,8vw,66px)}
+.qz-q{font-size:clamp(23px,4vw,34px);font-weight:800;font-family:'Baloo Bhaijaan 2';margin:6px 0 10px;line-height:1.5}
+.qz-ch{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px}
+.qz-c{background:var(--bg1);border:3px solid var(--line);border-radius:20px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.2s;font-size:20px;font-weight:800}
+.qz-c .e{font-size:54px;line-height:1.1}
+.qz-c:hover{border-color:var(--accent);transform:translateY(-3px)}
+.qz-c.right{background:#e3f6ea;border-color:var(--good);color:#1d5b38}.qz-c.wrong{background:#fde6e6;border-color:var(--bad);opacity:.6}
+body.qz-notext .qz-c .t{display:none}
