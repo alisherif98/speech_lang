@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.qz-ch{grid-template-columns:1fr 1fr!important}
+.qz-c{font-size:32px!important;font-family:'Baloo Bhaijaan 2'}
+.qz-c .e{font-size:70px!important}
+.qz-c[data-k="0"]{background:#e3f6ea}.qz-c[data-k="1"]{background:#fde6e6}
+</style></head><body>
+<main><div id="qz"></div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"أسئلة نعم / لا",sub:"أجب بنعم أو لا عن الصورة",icon:"👍"});
+const THINGS="🐶|كلب,🐱|قطة,🐟|سمكة,🍎|تفاحة,🍌|موزة,🚗|سيارة,✈️|طائرة,⚽|كرة,🏠|بيت,🌳|شجرة,☀️|شمس,🌙|قمر,🐘|فيل,🦁|أسد,🍕|بيتزا,🎂|كعكة,👟|حذاء,📖|كتاب,🐰|أرنب,🚌|حافلة".split(",").map(x=>{const[e,t]=x.split("|");return{e,t};});
+const FACTS=[["🐟","هل تسبح السمكة؟",1],["🐟","هل تطير السمكة؟",0],["🐦","هل يطير العصفور؟",1],["❄️","هل الثلج بارد؟",1],["🔥","هل النار باردة؟",0],["🍋","هل الليمون حلو؟",0],["🍬","هل الحلوى حلوة؟",1],["🐘","هل الفيل صغير؟",0],["🐜","هل النملة صغيرة؟",1],["🌙","هل نرى القمر في الليل؟",1],["🐄","هل تعطينا البقرة الحليب؟",1],["🐶","هل يقول الكلب مياو؟",0],["🐱","هل تقول القطة مياو؟",1],["🚗","هل للسيارة عجلات؟",1],["🐍","هل للأفعى أرجل؟",0],["☀️","هل الشمس حارة؟",1],["🍌","هل الموز أزرق؟",0],["🥛","هل الحليب أبيض؟",1],["✂️","هل نأكل بالمقص؟",0],["🛏️","هل ننام على السرير؟",1],["🦒","هل رقبة الزرافة طويلة؟",1],["🐢","هل السلحفاة سريعة؟",0]];
+const yn=a=>[{e:"👍",t:"نعم",ok:a===1},{e:"👎",t:"لا",ok:a===0}];
+function genName(){const t=KV.pick(THINGS),yes=Math.random()<.5,n=yes?t:KV.pick(THINGS.filter(x=>x!==t));return{pic:t.e,q:`هل هذا ${n.t}؟`,choices:yn(yes?1:0),ans:`${yes?"نعم":"لا"}، هذا ${t.t}`,ansEmoji:t.e};}
+KV.quiz({modes:{mix:"منوّع",name:"ما هذا؟",fact:"معلومات"},modeKey:"kvYNmode",make:mode=>{const f=KV.shuffle(FACTS).map(([e,q,a])=>({pic:e,q,choices:yn(a),ans:(a?"نعم":"لا")+"! أحسنت",ansEmoji:e}));
+ return [...Array(10)].map((_,k)=>mode==="name"?genName():mode==="fact"?f[k]:(k%2?f[k]:genName()));}});
+KV.bumpPlay("yes-no");
+</script>
+</body></html>

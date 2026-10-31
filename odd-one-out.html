@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.qz-ch{grid-template-columns:repeat(2,1fr)!important}
+</style></head><body>
+<main><div id="qz"></div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"الغريب في المجموعة",sub:"أي صورة لا تنتمي إلى المجموعة؟",icon:"🔍"});
+const G={"الحيوانات":"🐶|كلب,🐱|قطة,🦁|أسد,🐘|فيل,🐰|أرنب,🐒|قرد,🐄|بقرة","الفواكه":"🍎|تفاحة,🍌|موز,🍇|عنب,🍊|برتقال,🍓|فراولة,🍉|بطيخ,🍐|كمثرى","الملابس":"👕|قميص,👖|بنطال,👗|فستان,🧥|معطف,🧦|جوارب,🧢|قبعة,👟|حذاء","وسائل النقل":"🚗|سيارة,🚌|حافلة,🚆|قطار,✈️|طائرة,🚢|سفينة,🚲|دراجة,🚁|مروحية","أدوات المطبخ":"🍳|مقلاة,🥄|ملعقة,🍴|شوكة,🍽️|صحن,☕|كوب,🫖|إبريق,🥣|وعاء","الألوان":"🔴|أحمر,🔵|أزرق,🟢|أخضر,🟡|أصفر,🟣|بنفسجي,🟠|برتقالي,⚫|أسود","أجزاء الجسم":"👁️|عين,👂|أذن,👃|أنف,👄|فم,✋|يد,🦶|قدم,🦷|سن","الطقس":"☀️|شمس,🌧️|مطر,❄️|ثلج,⛈️|رعد,🌈|قوس قزح,☁️|غيوم,🌪️|إعصار"};
+const P=s=>s.split(",").map(x=>{const[e,t]=x.split("|");return{e,t};});const K=Object.keys(G);
+KV.quiz({make:()=>[...Array(10)].map(()=>{const g=KV.pick(K),o=KV.pick(K.filter(x=>x!==g)),three=KV.shuffle(P(G[g])).slice(0,3),odd=KV.pick(P(G[o]));
+ return{pic:"🤔",small:true,q:"أي واحدة لا تنتمي إلى المجموعة؟",choices:KV.shuffle([...three.map(x=>({...x,ok:false})),{...odd,ok:true}]),ans:`${odd.t} ليس من ${g}`,ansEmoji:odd.e,sub:`${three.map(x=>x.t).join("، ")} كلها من ${g}، أما ${odd.t} فمن ${o} 💡`};})});
+KV.bumpPlay("odd-one-out");
+</script>
+</body></html>

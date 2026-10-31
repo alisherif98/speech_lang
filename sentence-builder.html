@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.pic{font-size:clamp(70px,15vw,120px);text-align:center;line-height:1.2;animation:kvpop .4s}
+.line{min-height:84px;border:3px dashed var(--line);border-radius:22px;padding:12px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin:12px 0;background:rgba(255,255,255,.35)}
+.line.right{border-color:var(--good);border-style:solid;background:#e3f6ea}.line.wrong{border-color:var(--bad);animation:kvshake .45s}
+.bank{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;min-height:64px;margin-bottom:14px}
+.w{padding:12px 20px;border-radius:16px;font-size:24px;font-weight:800;background:var(--card);border:3px solid var(--line);box-shadow:0 4px 0 rgba(0,0,0,.08);transition:.2s;font-family:'Baloo Bhaijaan 2'}
+.w:hover{transform:translateY(-3px);border-color:var(--accent)}
+.line .w{background:var(--accent);color:#fff;border-color:var(--accent)}
+</style></head><body>
+<main><div class="panel qz">
+ <div class="qz-top"><span class="muted" id="prog"></span><div class="seg" id="lvl"><button data-v="3">3 كلمات</button><button data-v="4">4 كلمات</button><button data-v="5">5 كلمات</button></div><span style="font-weight:800">✅ <span id="score">0</span></span></div>
+ <div class="pic" id="pic"></div>
+ <p class="center muted">اضغط على الكلمات بالترتيب الصحيح لتكوّن جملة تصف الصورة</p>
+ <div class="line" id="line"></div><div class="bank" id="bank"></div>
+ <div class="row"><button class="ghost" id="hear">🔊 اسمع الجملة</button><button class="ghost" id="clear">🧹 مسح</button><button class="btn" id="check">✅ تحقق</button><button class="ghost" id="skip">تخطَّ ←</button></div>
+</div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"بناء الجمل",sub:"رتّب الكلمات لتكوّن جملة صحيحة",icon:"🧱"});
+const {$}=KV;
+const S={3:[["👦🍎","الولد يأكل التفاحة"],["👧📖","البنت تقرأ الكتاب"],["🐱🥛","القطة تشرب الحليب"],["🐦🌳","العصفور فوق الشجرة"],["👨‍🍳🍲","الطباخ يطبخ الطعام"],["🐶⚽","الكلب يلعب بالكرة"],["👩🚗","أمي تقود السيارة"],["🐟🌊","السمكة تسبح في البحر"],["👶😴","الطفل نائم الآن"],["🌞🔥","الشمس حارة جدًا"]],
+4:[["👦⚽🏟️","الولد يلعب الكرة في الملعب"],["👧🎨🖼️","البنت ترسم صورة جميلة جدًا"],["🐒🍌🌴","القرد يأكل الموز فوق الشجرة"],["👨‍🏫📚🏫","المعلم يشرح الدرس في المدرسة"],["🧒🪥🦷","الطفل يغسل أسنانه كل صباح"],["🐄🥛🚜","البقرة تعطينا الحليب كل يوم"],["👵🍪☕","جدتي تخبز الكعك في المطبخ"],["🐝🌸🍯","النحلة تطير فوق الزهرة الحمراء"]],
+5:[["👦🚲🏞️","الولد يركب الدراجة في الحديقة الكبيرة"],["👧🧸🛏️","البنت تضع الدمية على السرير الصغير"],["👨‍🚒🔥🚒","رجل الإطفاء يطفئ النار بسرعة كبيرة"],["🐱🐭🏠","القطة تجري خلف الفأر في البيت"],["👩‍⚕️🤒💊","الطبيبة تعطي المريض الدواء بعد الفحص"],["🧑‍🌾🥕🌱","المزارع يزرع الجزر في الأرض الخضراء"]]};
+let L=+(localStorage.getItem("kvSBL")||4);if(!S[L])L=4;let deck=[],i=0,score=0,line=[],bank=[];
+function make(){KV.hideResume();const pool=S[L].length>=10?S[L]:[...S[L]];deck=KV.shuffle(pool);i=0;score=0;$("score").textContent=0;$("lvl").querySelectorAll("button").forEach(b=>b.classList.toggle("on",+b.dataset.v===L));show();}
+function show(){KV.hideResume();const c=deck[i],words=c[1].split(" ");$("prog").textContent=`${i+1} / ${deck.length}`;
+ const p=$("pic");p.textContent=c[0];p.style.animation="none";void p.offsetWidth;p.style.animation="";
+ line=[];do{bank=KV.shuffle(words.map((w,k)=>({w,k})));}while(bank.every((b,k)=>b.w===words[k]));$("line").className="line";draw();}
+function draw(){$("line").innerHTML=line.length?line.map((x,k)=>`<button class="w" data-k="${k}">${x.w}</button>`).join(""):'<span class="muted">… الجملة هنا …</span>';
+ $("bank").innerHTML=bank.map((x,k)=>x?`<button class="w" data-k="${k}">${x.w}</button>`:"").join("");
+ $("line").querySelectorAll(".w").forEach(b=>b.onclick=()=>{const x=line.splice(+b.dataset.k,1)[0];bank[bank.indexOf(null)]=x;$("line").className="line";draw();});
+ $("bank").querySelectorAll(".w").forEach(b=>b.onclick=()=>{const k=+b.dataset.k;line.push(bank[k]);KV.speak(bank[k].w);bank[k]=null;KV.sfx.flip();draw();});}
+const next=()=>{if(i<deck.length-1){i++;show();}else make();};
+$("check").onclick=()=>{const c=deck[i];if(bank.some(Boolean))return KV.toast("استخدم كل الكلمات أولًا");
+ if(line.map(x=>x.w).join(" ")===c[1]){$("line").className="line right";score++;$("score").textContent=score;KV.addStar(2);KV.sfx.win();KV.confetti();const last=i===deck.length-1;
+  setTimeout(()=>KV.popup({emoji:c[0],title:last?"🏆 أنهيت كل الجمل!":"🎉 جملة صحيحة!",text:c[1],sub:last?`النتيجة: ${score} من ${deck.length}`:"اقرأ الجملة بصوت عالٍ 🗣️",nextLabel:last?"🔁 العب مرة أخرى":"الجملة التالية ←",onNext:next}),400);}
+ else{$("line").className="line wrong";KV.sfx.oops();KV.toast("الترتيب غير صحيح، حاول مرة أخرى 💪");}};
+$("clear").onclick=show;$("skip").onclick=next;$("hear").onclick=()=>KV.speak(deck[i][1]);
+$("lvl").querySelectorAll("button").forEach(b=>b.onclick=()=>{L=+b.dataset.v;localStorage.setItem("kvSBL",L);make();});
+make();KV.bumpPlay("sentence-builder");
+</script>
+</body></html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق والتخاطب – ألعاب علاج النطق للأطفال</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:center;margin:6px 0 26px}
+@media(max-width:820px){.hero{grid-template-columns:1fr}}
+.hero h2{font-size:clamp(32px,5vw,50px);line-height:1.2}.hero h2 span{color:var(--accent)}
+.hero p{font-size:19px;color:var(--muted);margin:10px 0 18px;line-height:1.7}
+.hero-art{font-size:clamp(56px,8vw,90px);text-align:center;line-height:1.3;background:var(--card);border-radius:32px;padding:20px;box-shadow:var(--shadow);border:2px solid var(--line)}
+.hero-art span{display:inline-block;animation:kvbounce 1.4s ease-in-out infinite alternate}
+.feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:26px}
+.feat{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:14px;display:flex;gap:12px;align-items:center}
+.feat .i{font-size:34px}.feat b{display:block;font-size:17px}.feat small{color:var(--muted)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:16px}
+.search{flex:1;min-width:220px;max-width:360px;padding:12px 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-family:inherit;font-size:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.g{background:var(--card);border:2px solid var(--line);border-radius:26px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:.25s}
+.g:hover{transform:translateY(-6px)}
+.g .art{height:150px;display:grid;place-items:center;font-size:76px;position:relative}
+.g .fav{position:absolute;top:10px;left:10px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.85);font-size:20px;color:#999}
+.g .fav.on{color:#f7b538}
+.g .plays{position:absolute;bottom:8px;right:10px;background:rgba(0,0,0,.35);color:#fff;font-size:12px;padding:3px 10px;border-radius:999px;font-weight:700}
+.g .new{position:absolute;top:10px;right:10px;background:#d64545;color:#fff;font-size:13px;padding:3px 12px;border-radius:999px;font-weight:800}
+.g .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.g h3{font-size:22px}.g p{color:var(--muted);font-size:15px;line-height:1.6;flex:1}
+.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--bg1);border:1px solid var(--line)}
+.g .play{text-align:center;background:var(--accent);color:#fff;font-weight:800;padding:10px;border-radius:14px;font-size:18px}
+.empty{text-align:center;color:var(--muted);padding:40px;font-size:18px;grid-column:1/-1}
+footer{text-align:center;color:var(--muted);font-size:14px;padding:30px 10px}
+</style></head><body>
+<main>
+ <section class="hero">
+  <div><h2>علاج النطق… <span>لكن بطريقة ممتعة!</span> 🎈</h2>
+  <p>ألعاب تفاعلية باللغة العربية لتدريب النطق ومخارج الحروف، والتمييز السمعي، وفهم الأسئلة، والمفردات، والمشاعر، وبناء الجمل، واتباع التعليمات. تصلح للأخصائيين والأهل والمعلمين، داخل الجلسة أو عن بُعد.</p>
+  <a class="btn big" href="#games">🎮 تصفّح الألعاب</a></div>
+  <div class="hero-art"><span>🎡</span><span style="animation-delay:.2s">🃏</span><span style="animation-delay:.4s">👾</span><br><span style="animation-delay:.6s">🎧</span><span style="animation-delay:.8s">🧪</span><span style="animation-delay:1s">😊</span></div>
+ </section>
+ <section class="feats">
+  <div class="feat"><span class="i">🔤</span><div><b>كل الحروف العربية</b><small>28 حرفًا في أول الكلمة ووسطها وآخرها</small></div></div>
+  <div class="feat"><span class="i">🔊</span><div><b>نطق صوتي</b><small>قراءة الكلمات والأسئلة بالعربية</small></div></div>
+  <div class="feat"><span class="i">⭐</span><div><b>نجوم ومكافآت</b><small>تشجيع الطفل مع كل إجابة صحيحة</small></div></div>
+  <div class="feat"><span class="i">📱</span><div><b>يعمل على كل الأجهزة</b><small>الحاسوب والجوال والتابلت</small></div></div>
+ </section>
+ <section id="games">
+  <div class="bar"><div class="tabs" id="filters" style="margin:0"></div><input class="search" id="q" placeholder="🔍 ابحث عن لعبة…"></div>
+  <div class="grid" id="grid"></div>
+ </section>
+</main>
+<footer>صُنعت بحب للأطفال 💛 – ألعاب النطق والتخاطب بالعربية</footer>
+<script src="assets/common.js"></script>
+<script>
+KV.header({title:"ألعاب النطق والتخاطب",sub:"ألعاب علاج النطق واللغة للأطفال بالعربية",icon:"🗣️"});
+document.title="ألعاب النطق والتخاطب – ألعاب علاج النطق للأطفال";KV.$("kvHome").remove();
+const G=[
+ {id:"sound-spinner",t:"عجلة الأصوات",e:"🎡",c:"#f4a259",cat:"speech",d:"لُف العجلة وقل الكلمة التي اختارتها. كل الحروف العربية الـ28 مع تسجيل صوتك.",tags:["أصوات الكلام","مخارج الحروف"]},
+ {id:"matching",t:"لعبة المطابقة",e:"🃏",c:"#7d6bd6",cat:"speech",d:"اقلب بطاقتين وابحث عن الأزواج المتشابهة، وقل الكلمة عند كل مطابقة.",tags:["أصوات الكلام","الذاكرة"]},
+ {id:"knock",t:"طق طق! مين؟",e:"🚪",c:"#c0392b",cat:"speech",d:"اطرق على الأبواب لتنكشف الكلمات المخفية خلفها، وقل كل كلمة.",tags:["أصوات الكلام"]},
+ {id:"feed-monster",t:"أطعم الوحش",e:"👾",c:"#8cb369",cat:"speech",d:"أطعم الوحش أو القرش أو التمساح وجبة بعد وجبة حتى ينفجر عند رقم سري!",tags:["أصوات الكلام","تكرار"]},
+ {id:"scavenger",t:"البحث عن الكنز",e:"🔎",c:"#3d9ad1",cat:"speech",d:"الكلمات مخبأة في الحديقة أو البحر أو الفضاء أو البيت. ابحث عنها!",tags:["أصوات الكلام"]},
+ {id:"board-game",t:"لعبة اللوح",e:"🎲",c:"#f7b538",cat:"speech",d:"من لاعب إلى 3 لاعبين. ارمِ النرد وتحرّك وقل الكلمة التي تقف عليها.",tags:["أصوات الكلام","تبادل الأدوار"]},
+ {id:"minimal-pairs",t:"اسمع واختر",e:"🎧",c:"#2f8f83",cat:"speech",isNew:1,d:"الثنائيات الصغرى: كلب/قلب، سيف/صيف… استمع للكلمة واختر الصورة الصحيحة.",tags:["التمييز السمعي","أصوات الكلام"]},
+ {id:"rhyming",t:"كلمات على نفس الوزن",e:"🎵",c:"#e76f9a",cat:"speech",isNew:1,d:"قمر – شجر، باب – كتاب… اختر الكلمة التي تنتهي بنفس الصوت.",tags:["الوعي الصوتي","القافية"]},
+ {id:"wh-flashcards",t:"بطاقات أسئلة الاستفهام",e:"❓",c:"#2f8f83",cat:"lang",d:"من؟ ماذا؟ أين؟ متى؟ لماذا؟ كيف؟ بطاقات أسئلة مع خيارات مصوّرة.",tags:["اللغة","أدوات الاستفهام"]},
+ {id:"category",t:"سيد التصنيفات",e:"🧺",c:"#e76f9a",cat:"lang",d:"جد كل الحيوانات أو الفواكه أو الملابس… قبل انتهاء الوقت.",tags:["التصنيف","المفردات"]},
+ {id:"odd-one-out",t:"الغريب في المجموعة",e:"🔍",c:"#b7791f",cat:"lang",isNew:1,d:"أربع صور، واحدة منها لا تنتمي للمجموعة. هل تعرف أيها؟ ولماذا؟",tags:["التصنيف","التفكير"]},
+ {id:"opposites",t:"الأضداد",e:"↔️",c:"#3d9ad1",cat:"lang",isNew:1,d:"كبير وصغير، حار وبارد… اختر عكس الكلمة.",tags:["المفردات","المفاهيم"]},
+ {id:"riddles",t:"من أنا؟",e:"🕵️",c:"#7d6bd6",cat:"lang",isNew:1,d:"استمع لصفات الشيء وخمّن ما هو. ثم صِف أنت شيئًا!",tags:["الفهم","الوصف","الاستدلال"]},
+ {id:"sequencer",t:"ترتيب القصة",e:"📚",c:"#b7791f",cat:"lang",d:"رتّب صور القصة بالترتيب الصحيح: أولًا، ثم، وفي النهاية.",tags:["السرد","التسلسل"]},
+ {id:"where",t:"أين هو؟",e:"📍",c:"#5b8e7d",cat:"lang",d:"انظر إلى الصورة واختر: فوق، تحت، داخل، بجانب، أمام، خلف.",tags:["ظروف المكان"]},
+ {id:"yes-no",t:"أسئلة نعم / لا",e:"👍",c:"#3aa66b",cat:"lang",d:"أجب بنعم أو لا عن الصور والمعلومات بأزرار كبيرة وواضحة.",tags:["الفهم"]},
+ {id:"object-function",t:"وظائف الأشياء",e:"✂️",c:"#f25c54",cat:"lang",d:"ماذا نفعل بالمقص؟ ماذا نستخدم لنكتب؟ اربط الأشياء بوظائفها.",tags:["المفردات"]},
+ {id:"potion",t:"وصفة الجرعة السحرية",e:"🧪",c:"#7d6bd6",cat:"lang",d:"اتبع تعليمات من خطوة إلى 4 خطوات لتصنع جرعة سحرية.",tags:["اتباع التعليمات","الاستماع"]},
+ {id:"sentence-builder",t:"بناء الجمل",e:"🧱",c:"#e2683c",cat:"social",isNew:1,d:"رتّب الكلمات لتكوّن جملة تصف الصورة، من 3 إلى 5 كلمات.",tags:["التراكيب","القواعد"]},
+ {id:"story-dice",t:"حجر نرد القصص",e:"📖",c:"#e2683c",cat:"social",d:"ارمِ 4 أحجار (مَن، أين، ماذا وجد، ماذا حدث) واصنع قصتك الخاصة.",tags:["السرد","التعبير"]},
+ {id:"emotions",t:"المشاعر",e:"😊",c:"#f7b538",cat:"social",isNew:1,d:"تعرّف على المشاعر من الوجوه ومن المواقف اليومية.",tags:["المهارات الاجتماعية","المشاعر"]}];
+const F={all:"الكل",speech:"🗣️ أصوات الكلام",lang:"🧠 اللغة",social:"💬 التعبير والمهارات الاجتماعية",new:"🆕 الجديدة",fav:"⭐ المفضلة"};
+let filter="all",favs=JSON.parse(localStorage.getItem("kvFavs")||"[]");
+const plays=JSON.parse(localStorage.getItem("kvPlays")||"{}"),$=KV.$;
+$("filters").innerHTML=Object.entries(F).map(([k,v])=>`<button class="tab ${k===filter?"on":""}" data-k="${k}">${v}</button>`).join("");
+$("filters").querySelectorAll(".tab").forEach(b=>b.onclick=()=>{filter=b.dataset.k;$("filters").querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===b));render();});
+$("q").oninput=render;
+function render(){const q=$("q").value.trim();
+ const list=G.filter(g=>(filter==="all"||(filter==="fav"?favs.includes(g.id):filter==="new"?g.isNew:g.cat===filter))&&(!q||(g.t+g.d+g.tags.join(" ")).includes(q)));
+ $("grid").innerHTML=list.length?list.map(g=>`<div class="g"><div class="art" style="background:linear-gradient(135deg,${g.c}33,${g.c}88)"><button class="fav ${favs.includes(g.id)?"on":""}" data-id="${g.id}" title="المفضلة">★</button>${g.isNew?'<span class="new">جديد</span>':""}${g.e}${plays[g.id]?`<span class="plays">لُعبت ${plays[g.id]} مرة</span>`:""}</div>
+  <div class="body"><h3>${g.t}</h3><p>${g.d}</p><div class="tags">${g.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div><a class="play" href="${g.id}.html">▶️ العب الآن</a></div></div>`).join("")
+  :`<div class="empty">${filter==="fav"?"لا توجد ألعاب مفضلة بعد. اضغط ★ على أي لعبة لإضافتها.":"لا توجد ألعاب مطابقة للبحث."}</div>`;
+ $("grid").querySelectorAll(".fav").forEach(b=>b.onclick=()=>{const id=b.dataset.id;favs=favs.includes(id)?favs.filter(x=>x!==id):[...favs,id];localStorage.setItem("kvFavs",JSON.stringify(favs));render();});}
+render();
+</script></body></html>

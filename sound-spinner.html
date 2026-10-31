@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.wrap{display:grid;grid-template-columns:1fr 320px;gap:20px}@media(max-width:900px){.wrap{grid-template-columns:1fr}}
+.stage{display:flex;flex-direction:column;align-items:center;gap:16px}
+.prompt{font-size:20px;color:var(--muted);text-align:center}.prompt b{color:var(--accent);font-size:24px}
+.wheel-wrap{position:relative;width:min(78vw,470px);aspect-ratio:1}
+.wheel-wrap canvas{width:100%;height:100%;border-radius:50%;box-shadow:0 14px 40px rgba(0,0,0,.18),0 0 0 10px var(--line)}
+.pointer{position:absolute;top:-22px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-top:44px solid var(--accent);filter:drop-shadow(0 4px 4px rgba(0,0,0,.25));z-index:3}
+.pointer.wiggle{animation:wig .12s}@keyframes wig{50%{transform:translateX(-50%) rotate(-14deg)}}
+.hub{position:absolute;inset:0;margin:auto;width:22%;height:22%;border-radius:50%;background:var(--card);border:6px solid var(--accent);display:grid;place-items:center;font-weight:800;font-size:clamp(16px,3vw,24px);color:var(--accent);box-shadow:0 4px 12px rgba(0,0,0,.2);font-family:'Baloo Bhaijaan 2'}
+.opts{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;color:var(--muted);font-size:15px}
+.opts label{display:flex;gap:6px;align-items:center;cursor:pointer}.opts input{accent-color:var(--accent);width:18px;height:18px}
+aside{display:flex;flex-direction:column;gap:16px}
+.panel h3{font-size:19px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.history{display:flex;flex-wrap:wrap;gap:8px}.history .h{background:var(--bg1);border:1px solid var(--line);border-radius:12px;padding:4px 10px}
+.wl{display:grid;grid-template-columns:1fr 1fr;gap:8px}.wl .w{background:var(--bg1);border-radius:12px;padding:8px;display:flex;align-items:center;gap:6px;font-weight:700;border:1px solid var(--line)}.wl .w em{font-style:normal;font-size:22px}
+</style></head><body>
+<main><div class="wrap">
+ <section class="panel stage">
+  <div class="prompt">الصوت المستهدف: <b id="target"></b></div>
+  <div class="wheel-wrap"><div class="pointer" id="pointer"></div><canvas id="wheel" width="960" height="960"></canvas><button class="hub" id="hub">لِف!</button></div>
+  <button class="btn big" id="spinBtn">🎯 لِف العجلة</button>
+  <div class="opts"><label><input type="checkbox" id="removeAfter"> احذف الكلمة بعد ظهورها</label><label><input type="checkbox" id="autoSpeak" checked> انطق الكلمة تلقائيًا</label>
+  <label>عدد مرات التكرار: <select id="triesSel"><option>1</option><option selected>3</option><option>5</option></select></label></div>
+ </section>
+ <aside>
+  <div class="panel"><h3>🎯 كلمات العجلة <button class="ghost" id="pickBtn">📝 تغيير</button></h3><div class="wl" id="wl"></div></div>
+  <div class="panel"><h3>🕘 الكلمات التي ظهرت <button class="ghost" id="clearHist">مسح</button></h3><div class="history" id="history"></div></div>
+ </aside>
+</div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"عجلة الأصوات",sub:"لُف العجلة وقل الكلمة",icon:"🎡"});
+const {$}=KV;const COLORS=["#f4a259","#5b8e7d","#f25c54","#7d6bd6","#f7b538","#3d9ad1","#e76f9a","#8cb369"];
+let all=[],wheel=[],rot=0,spinning=false,hist=JSON.parse(localStorage.getItem("kvSpinHist")||"[]"),letters=["ر"],pos="start";
+const cv=$("wheel"),ctx=cv.getContext("2d");
+function draw(){const W=cv.width,R=W/2,n=wheel.length;ctx.clearRect(0,0,W,W);ctx.save();ctx.translate(R,R);ctx.rotate(rot*Math.PI/180);
+ if(!n){ctx.fillStyle="#ddd";ctx.beginPath();ctx.arc(0,0,R,0,7);ctx.fill();ctx.restore();return;}
+ const seg=2*Math.PI/n;
+ for(let i=0;i<n;i++){const a0=-Math.PI/2+i*seg;ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R-4,a0,a0+seg);ctx.closePath();ctx.fillStyle=COLORS[i%8];ctx.fill();ctx.lineWidth=6;ctx.strokeStyle="rgba(255,255,255,.85)";ctx.stroke();
+  ctx.save();ctx.rotate(a0+seg/2);ctx.textAlign="center";ctx.textBaseline="middle";
+  ctx.save();ctx.translate(R*.66,0);ctx.rotate(Math.PI/2);ctx.font=`${n<=4?120:n<=6?100:84}px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif`;ctx.fillText(wheel[i].e,0,0);ctx.restore();
+  ctx.save();ctx.translate(R*.40,0);ctx.rotate(Math.PI/2);ctx.font=`800 ${n<=4?56:n<=6?48:40}px "Baloo Bhaijaan 2",Tajawal,sans-serif`;ctx.fillStyle="#fff";ctx.strokeStyle="rgba(0,0,0,.25)";ctx.lineWidth=6;ctx.direction="rtl";ctx.strokeText(wheel[i].w,0,0);ctx.fillText(wheel[i].w,0,0);ctx.restore();
+  ctx.restore();}
+ for(let i=0;i<n*3;i++){const a=i*(2*Math.PI/(n*3));ctx.beginPath();ctx.arc(Math.cos(a)*(R-18),Math.sin(a)*(R-18),7,0,7);ctx.fillStyle="rgba(255,255,255,.9)";ctx.fill();}
+ ctx.restore();}
+const idxAt=r=>{const n=wheel.length,seg=360/n,a=((360-(r%360))%360+360)%360;return Math.floor(a/seg)%n;};
+function spin(){if(spinning)return;KV.hideResume();if(wheel.length<2){wheel=[...all];render();if(wheel.length<2)return pick();}
+ spinning=true;$("spinBtn").disabled=true;const n=wheel.length,seg=360/n,t=Math.floor(Math.random()*n),jit=(Math.random()-.5)*seg*.7,start=rot;
+ let end=start-(start%360)+360*(5+Math.floor(Math.random()*3))+(360-(t*seg+seg/2+jit));if(end-start<1800)end+=360;
+ const dur=4200+Math.random()*1200,t0=performance.now();let last=idxAt(start);
+ (function fr(now){const p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,4);rot=start+(end-start)*e;draw();const id=idxAt(rot);
+  if(id!==last){last=id;KV.sfx.tick();const pt=$("pointer");pt.classList.remove("wiggle");void pt.offsetWidth;pt.classList.add("wiggle");}
+  if(p<1)requestAnimationFrame(fr);else{rot%=360;spinning=false;$("spinBtn").disabled=false;result(idxAt(rot));}})(t0);}
+function hl(w){const set=new Set(letters.flatMap(l=>[...(KV_VARIANTS[l]||l)]));return [...w].map(c=>set.has(c)?`<mark>${c}</mark>`:c).join("");}
+function result(i){const w=wheel[i],T=+$("triesSel").value;let done=0;KV.sfx.win();
+ hist.unshift(w.e+" "+w.w);hist=hist.slice(0,30);localStorage.setItem("kvSpinHist",JSON.stringify(hist));renderHist();
+ const after=()=>{if($("removeAfter").checked){wheel.splice(wheel.indexOf(w),1);if(wheel.length<2){KV.toast("انتهت الكلمات! سنعيدها من جديد 🎉");wheel=[...all];}render();}};
+ const tries=()=>`<div class="tries">${[...Array(T)].map((_,k)=>`<div class="try ${k<done?"ok":""}">${k<done?"⭐":""}</div>`).join("")}</div>`;
+ KV.popup({emoji:w.e,title:"🎉 العجلة اختارت",html:hl(w.w),say:$("autoSpeak").checked?w.w:false,text:w.w,sub:`قل الكلمة ${T===1?"مرة واحدة":T+" مرات"} 🗣️`,
+  extra:`<div id="trs">${tries()}</div><div class="row"><button class="rb good" id="sGood">👍 أحسنت</button><button class="rb again" id="sAgain">🔁 حاول مرة أخرى</button><button class="rb rec" id="sRec">🎙️ سجّل صوتك</button><button class="rb del" id="sDel">🗑️ حذف التسجيل</button></div>`,
+  nextLabel:"🎡 لِف العجلة مرة أخرى",onNext:()=>{after();setTimeout(spin,300);},onClose:after,
+  onShow:()=>{const upd=()=>$("sDel").style.display=KV.hasRec(w.w)?"":"none";upd();
+   $("sGood").onclick=()=>{if(done>=T)return;done++;KV.sfx.star();KV.addStar();$("trs").innerHTML=tries();if(done===T){KV.confetti();KV.speak("أحسنت! ممتاز");}};
+   $("sAgain").onclick=()=>{KV.sfx.oops();KV.toast("لا بأس! استمع وحاول مرة أخرى 💪");setTimeout(()=>KV.speak(w.w),400);};
+   $("sRec").onclick=()=>KV.record(w.w,$("sRec"),upd);$("sDel").onclick=()=>{KV.delRec(w.w);upd();KV.toast("تم حذف التسجيل");};}});}
+function render(){$("wl").innerHTML=wheel.map(x=>`<div class="w"><em>${x.e}</em>${x.w}</div>`).join("");$("target").textContent=letters.join(" ، ")+" "+KV_POS[pos];draw();}
+function renderHist(){$("history").innerHTML=hist.length?hist.map(h=>`<span class="h">${h}</span>`).join(""):`<span class="muted">لم تظهر أي كلمة بعد</span>`;}
+const pick=()=>KV.wordPicker({key:"spinner",min:2,max:8,onDone:(w,st)=>{all=w;wheel=[...w];letters=st.letters;pos=st.pos;rot=0;render();}});
+$("pickBtn").onclick=pick;$("spinBtn").onclick=spin;$("hub").onclick=spin;
+$("clearHist").onclick=()=>{hist=[];localStorage.setItem("kvSpinHist","[]");renderHist();};
+document.addEventListener("keydown",e=>{if(e.code==="Space"&&!document.querySelector(".overlay.show")&&document.activeElement.tagName!=="INPUT"&&document.activeElement.tagName!=="SELECT"){e.preventDefault();spin();}});
+renderHist();const s=KV.savedWords("spinner");if(s){all=s.sel;wheel=[...all];letters=s.letters;pos=s.pos;render();}else{draw();pick();}
+document.fonts&&document.fonts.ready.then(draw);KV.bumpPlay("sound-spinner");
+</script>
+</body></html>

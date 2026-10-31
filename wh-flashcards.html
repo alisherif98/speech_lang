@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.cat{background:var(--card);border:3px solid var(--line);border-radius:24px;padding:18px;text-align:center;box-shadow:var(--shadow);transition:.2s;position:relative}
+.cat:hover{transform:translateY(-4px)}
+.cat.on{border-color:var(--c);box-shadow:0 0 0 4px rgba(0,0,0,.06),var(--shadow)}
+.cat .ic{font-size:48px}.cat b{display:block;font-size:34px;font-family:'Baloo Bhaijaan 2';color:var(--c)}
+.cat .tick{position:absolute;top:10px;left:12px;width:28px;height:28px;border-radius:50%;background:var(--c);color:#fff;display:none;place-items:center;font-weight:800}
+.cat.on .tick{display:grid}
+.bar{flex:1;height:14px;background:var(--bg1);border-radius:999px;border:2px solid var(--line);overflow:hidden}.bar div{height:100%;background:var(--cat,var(--accent));transition:width .4s}
+.badge{display:inline-block;background:var(--cat);color:#fff;font-weight:800;padding:6px 18px;border-radius:999px;font-size:22px;font-family:'Baloo Bhaijaan 2'}
+.qz-q mark{background:none;color:var(--cat)}
+body.hide-text .qz-c .t{display:none}
+</style></head><body>
+<main>
+<section id="home"><h2 class="center" style="font-size:30px">اختر نوع السؤال</h2><p class="muted center" style="margin-bottom:16px">اختر نوعًا واحدًا أو أكثر، ثم اضغط «ابدأ».</p>
+ <div class="cats" id="cats"></div>
+ <div class="panel" style="margin-top:16px">
+  <div class="setting-row"><b>عدد الخيارات</b><div class="seg" id="nC"><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button></div></div>
+  <div class="setting-row"><b>عدد البطاقات</b><div class="seg" id="nK"><button data-v="5">5</button><button data-v="10">10</button><button data-v="20">20</button><button data-v="0">الكل</button></div></div>
+  <div class="setting-row" style="border:none"><b>كتابة الخيارات</b><div class="seg" id="tx"><button data-v="show">صورة + كلمة</button><button data-v="hide">صورة فقط</button></div></div>
+ </div>
+ <div class="row" style="margin-top:16px"><button class="ghost" id="selAll">✅ تحديد الكل</button><button class="ghost" id="selNone">⬜ إلغاء تحديد الكل</button><button class="btn big" id="start">▶️ ابدأ</button></div>
+</section>
+<section id="play" style="display:none"><div class="panel qz">
+ <div class="row" style="flex-wrap:nowrap;margin-bottom:10px"><b id="count"></b><div class="bar"><div id="prog"></div></div><b>✅ <span id="correct">0</span></b></div>
+ <span class="badge" id="badge"></span>
+ <div class="qz-pic" id="scene"></div><div class="qz-q" id="question"></div>
+ <div class="row"><button class="ghost" id="readQ">🔊 اقرأ السؤال</button><button class="ghost" id="readAll">🔊 السؤال والخيارات</button></div>
+ <div class="qz-ch" id="choices"></div>
+ <div class="row" style="justify-content:space-between;margin-top:16px"><button class="ghost" id="prev">→ السابق</button><button class="ghost" id="homeB">🏠 أنواع الأسئلة</button><button class="ghost" id="next">التالي ←</button></div>
+</div></section>
+</main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"بطاقات أسئلة الاستفهام",sub:"من؟ ماذا؟ أين؟ متى؟ لماذا؟ كيف؟",icon:"❓"});
+const {$}=KV;
+const R=s=>s.split(";").map(c=>{const[sc,q,a,...d]=c.split("~");return{scene:sc,q,a,d};});
+const CATS={
+who:{l:"من؟",i:"👤",c:"#e2683c",k:R("🔥🚒~من يطفئ الحريق؟~🧑‍🚒|رجل الإطفاء~🧑‍🍳|الطباخ~👨‍🏫|المعلم~🧑‍🌾|المزارع;🤒💊~من يعالج المرضى؟~🧑‍⚕️|الطبيب~🧑‍🚒|رجل الإطفاء~🧑‍✈️|الطيار~💂|الحارس;📚✏️~من يعلّم الطلاب في المدرسة؟~👨‍🏫|المعلم~🧑‍🍳|الطباخ~👮|الشرطي~🧑‍🔧|الميكانيكي;✈️☁️~من يقود الطائرة؟~🧑‍✈️|الطيار~🧑‍⚕️|الطبيب~🧑‍🌾|المزارع~🧑‍🎨|الرسام;🍳🍲~من يطبخ الطعام في المطعم؟~🧑‍🍳|الطباخ~👮|الشرطي~🧑‍🚀|رائد الفضاء~👨‍🏫|المعلم;🌾🚜~من يزرع الخضار والفواكه؟~🧑‍🌾|المزارع~🧑‍✈️|الطيار~🧑‍⚕️|الطبيب~🧑‍🍳|الطباخ;🚦🚓~من ينظّم المرور ويحمينا؟~👮|الشرطي~🧑‍🎨|الرسام~🧑‍🌾|المزارع~🧑‍🍳|الطباخ;🚗🔧~من يصلح السيارة؟~🧑‍🔧|الميكانيكي~👨‍🏫|المعلم~🧑‍⚕️|الطبيب~🧑‍✈️|الطيار;🚀🌕~من يسافر إلى الفضاء؟~🧑‍🚀|رائد الفضاء~🧑‍🌾|المزارع~👮|الشرطي~🧑‍🍳|الطباخ;🦷🪥~من يعالج الأسنان؟~🦷|طبيب الأسنان~🧑‍🔧|الميكانيكي~🧑‍🎨|الرسام~🧑‍✈️|الطيار")},
+what:{l:"ماذا؟",i:"❓",c:"#2f8f83",k:R("✏️📒~ماذا نستخدم للكتابة؟~✏️|القلم~🥄|الملعقة~👟|الحذاء~🛏️|السرير;🥣😋~ماذا نستخدم لنأكل الشوربة؟~🥄|الملعقة~✂️|المقص~🪥|فرشاة الأسنان~📱|الهاتف;✂️📄~ماذا نستخدم لقص الورق؟~✂️|المقص~🥄|الملعقة~🧦|الجوارب~☂️|المظلة;🌧️☔~ماذا نحمل عندما تمطر؟~☂️|المظلة~🕶️|النظارة الشمسية~🎈|البالون~⚽|الكرة;🦷✨~ماذا نستخدم لتنظيف أسناننا؟~🪥|فرشاة الأسنان~🍴|الشوكة~✏️|القلم~🧹|المكنسة;🐄🥛~ماذا تعطينا البقرة؟~🥛|الحليب~🍯|العسل~🥚|البيض~🧶|الصوف;🐝🌸~ماذا تصنع النحلة؟~🍯|العسل~🥛|الحليب~🍞|الخبز~🧀|الجبن;🥶❄️~ماذا نلبس عندما يكون الجو باردًا؟~🧥|المعطف~🩳|الشورت~🩴|الشبشب~🕶️|النظارة الشمسية;🐒🌴~ماذا يحب القرد أن يأكل؟~🍌|الموز~🥩|اللحم~🐟|السمك~🧂|الملح;🌙😴~ماذا نفعل في الليل؟~😴|ننام~🏊|نسبح~🏫|نذهب للمدرسة~🍳|نطبخ")},
+where:{l:"أين؟",i:"📍",c:"#3d9ad1",k:R("🐟🌊~أين تعيش السمكة؟~🌊|في البحر~🌳|على الشجرة~🏜️|في الصحراء~🛏️|في السرير;😴🌙~أين ننام؟~🛏️|في السرير~🛁|في الحوض~🚗|في السيارة~🍽️|على الطاولة;🐦🪺~أين يعيش العصفور؟~🌳|على الشجرة~🌊|في البحر~🕳️|تحت الأرض~🧊|في الثلاجة;📚🎒~أين نتعلم القراءة والكتابة؟~🏫|في المدرسة~🏥|في المستشفى~🛒|في السوق~🏖️|على الشاطئ;🤒🩺~أين نذهب عندما نمرض؟~🏥|إلى المستشفى~🎪|إلى السيرك~🏫|إلى المدرسة~🏟️|إلى الملعب;🍳🥘~أين نطبخ الطعام؟~🍳|في المطبخ~🛁|في الحمام~🚗|في السيارة~🛏️|في غرفة النوم;🥶🥛~أين نضع الحليب ليبقى باردًا؟~🧊|في الثلاجة~🔥|في الفرن~👜|في الحقيبة~🛏️|تحت السرير;🐫☀️~أين يعيش الجمل؟~🏜️|في الصحراء~🌊|في البحر~❄️|في القطب~🌳|في الغابة;🛒🍎~أين نشتري الفواكه؟~🛒|في السوق~🏥|في المستشفى~🏫|في المدرسة~🕌|في المسجد;🧼🛁~أين نستحم؟~🛁|في الحمام~🍳|في المطبخ~🏟️|في الملعب~🚌|في الحافلة")},
+when:{l:"متى؟",i:"⏰",c:"#7d6bd6",k:R("😴🛏️~متى ننام؟~🌙|في الليل~☀️|في الظهر~🌅|في الصباح~🏫|في المدرسة;☂️🌧️~متى نستخدم المظلة؟~🌧️|عندما تمطر~☀️|عندما يكون الجو مشمسًا~🌙|في الليل~🎂|في عيد الميلاد;🎂🎁~متى نأكل الكعكة ونطفئ الشموع؟~🎂|في عيد الميلاد~🏫|في المدرسة~😴|عندما ننام~🛁|عندما نستحم;🧥🧣~متى نلبس المعطف والوشاح؟~❄️|في الشتاء~☀️|في الصيف~🏖️|على الشاطئ~🏊|عند السباحة;🍳🥛~متى نأكل الفطور؟~🌅|في الصباح~🌙|في الليل~🌇|في المساء~🛏️|قبل النوم مباشرة;🪥🦷~متى نغسل أسناننا؟~🌙|قبل النوم~⚽|أثناء اللعب~🚗|في السيارة~🏊|أثناء السباحة;🧼🙌~متى نغسل أيدينا؟~🍽️|قبل الأكل~😴|أثناء النوم~📺|أثناء مشاهدة التلفاز~🎨|أثناء الرسم;🏖️🍦~متى نذهب إلى البحر ونأكل الآيس كريم؟~☀️|في الصيف~❄️|في الشتاء~🌧️|عندما تمطر~🌙|في منتصف الليل;🌙🌟~متى نرى القمر والنجوم؟~🌙|في الليل~☀️|في الظهر~🌅|في الصباح~🏫|في الحصة;🎁🕌~متى نلبس الملابس الجديدة ونزور الأقارب؟~🎉|في العيد~😴|عند النوم~🤒|عندما نمرض~🌧️|عندما تمطر")},
+why:{l:"لماذا؟",i:"🤔",c:"#e76f9a",k:R("🍔😋~لماذا نأكل الطعام؟~💪|لأننا جائعون~😴|لأننا نعسانون~🥶|لأننا بردانون~😂|لأننا نضحك;🥤💧~لماذا نشرب الماء؟~🥵|لأننا عطشانون~😴|لأننا نعسانون~🥶|لأننا بردانون~🎨|لأننا نرسم;🧥❄️~لماذا نلبس المعطف؟~🥶|لأن الجو بارد~🥵|لأن الجو حار~🍽️|لأننا جائعون~🎂|لأنه عيد الميلاد;😴🛏️~لماذا نذهب إلى السرير؟~😴|لأننا متعبون~🍽️|لأننا جائعون~⚽|لأننا نريد اللعب~🛁|لأننا متسخون;😢🤕~لماذا يبكي الطفل؟~🤕|لأنه سقط وتألم~🎁|لأنه أخذ هدية~😂|لأنه سمع نكتة~🍦|لأنه أكل آيس كريم;🧼🙌~لماذا نغسل أيدينا؟~🦠|لنزيل الجراثيم~🎨|لنرسم~😴|لننام~🎵|لنغني;🕶️☀️~لماذا نلبس النظارة الشمسية؟~☀️|لأن الشمس قوية~🌧️|لأنها تمطر~🌙|لأنه الليل~❄️|لأن الثلج يتساقط;🚑🏥~لماذا نذهب إلى الطبيب؟~🤒|لأننا مرضى~🎉|لأننا سعداء~🍕|لأننا جائعون~⚽|لنلعب الكرة;💡🌙~لماذا نشعل المصباح؟~🌑|لأن المكان مظلم~☀️|لأن الشمس مشرقة~🥵|لأن الجو حار~🍽️|لأننا جائعون;😊🎁~لماذا الطفلة سعيدة؟~🎁|لأنها أخذت هدية~🤕|لأنها سقطت~💔|لأن لعبتها انكسرت~🤒|لأنها مريضة")},
+how:{l:"كيف؟",i:"🛠️",c:"#8cb369",k:R("🐦☁️~كيف يتحرك العصفور؟~🕊️|يطير~🏊|يسبح~🐍|يزحف~🚗|يقود;🐟🌊~كيف تتحرك السمكة؟~🏊|تسبح~🕊️|تطير~🦘|تقفز~🚶|تمشي;🏫🚌~كيف نذهب إلى المدرسة؟~🚌|بالحافلة~🚀|بالصاروخ~🐫|بالجمل~🚢|بالسفينة;🐍🌿~كيف تتحرك الأفعى؟~🐍|تزحف~🕊️|تطير~🏃|تجري على رجلين~🚲|تركب الدراجة;🥣😋~كيف نأكل الشوربة؟~🥄|بالملعقة~✂️|بالمقص~✏️|بالقلم~🔨|بالمطرقة;😊👋~كيف نحيي أصدقاءنا؟~👋|نقول السلام عليكم~😠|نصرخ~🙈|نختبئ~😴|ننام;🦘🌾~كيف يتحرك الكنغر؟~🦘|يقفز~🏊|يسبح~🕊️|يطير~🐍|يزحف;🧊☀️~كيف يصبح الثلج تحت الشمس؟~💧|يذوب ويصبح ماء~🔥|يشتعل~🪨|يصبح حجرًا~🌱|يصبح نبتة;🎂🕯️~كيف نطفئ الشموع؟~🌬️|ننفخ عليها~💧|نشربها~🥄|نأكلها~👟|نركلها;📱☎️~كيف نتحدث مع جدتنا البعيدة؟~📱|بالهاتف~📺|بالتلفاز~🎈|بالبالون~🧸|بالدمية")}};
+let st={sel:Object.keys(CATS),nC:3,nK:10,tx:"show"};try{Object.assign(st,JSON.parse(localStorage.getItem("kvWH")||"{}"));}catch(e){}
+const save=()=>localStorage.setItem("kvWH",JSON.stringify(st));
+let deck=[],pos=0,done=[],correct=0;
+function renderHome(){
+ $("cats").innerHTML=Object.entries(CATS).map(([k,c])=>`<button class="cat ${st.sel.includes(k)?"on":""}" style="--c:${c.c}" data-k="${k}"><span class="tick">✓</span><div class="ic">${c.i}</div><b>${c.l}</b><small class="muted">${c.k.length} بطاقات</small></button>`).join("");
+ $("cats").querySelectorAll(".cat").forEach(b=>b.onclick=()=>{const k=b.dataset.k,i=st.sel.indexOf(k);i>-1?st.sel.splice(i,1):st.sel.push(k);save();renderHome();KV.speak(CATS[k].l);});
+ [["nC","nC"],["nK","nK"],["tx","tx"]].forEach(([id,key])=>$(id).querySelectorAll("button").forEach(b=>{b.classList.toggle("on",String(st[key])===b.dataset.v);b.onclick=()=>{st[key]=key==="tx"?b.dataset.v:+b.dataset.v;save();renderHome();};}));
+ document.body.classList.toggle("hide-text",st.tx==="hide");}
+$("selAll").onclick=()=>{st.sel=Object.keys(CATS);save();renderHome();KV.toast("تم تحديد جميع الأنواع ✅");};
+$("selNone").onclick=()=>{st.sel=[];save();renderHome();KV.toast("تم إلغاء تحديد جميع الأنواع");};
+function start(){if(!st.sel.length)return KV.toast("اختر نوع سؤال واحد على الأقل");
+ deck=KV.shuffle(st.sel.flatMap(k=>CATS[k].k.map(c=>({...c,cat:k}))));if(st.nK)deck=deck.slice(0,st.nK);
+ deck.forEach(c=>c.opts=KV.shuffle([c.a,...KV.shuffle(c.d).slice(0,st.nC-1)]));pos=0;correct=0;done=deck.map(()=>0);
+ $("home").style.display="none";$("play").style.display="block";show();}
+function show(){KV.hideResume();KV.stopSpeech();const c=deck[pos],cat=CATS[c.cat];document.body.style.setProperty("--cat",cat.c);
+ $("count").textContent=`${pos+1} / ${deck.length}`;$("prog").style.width=(pos/deck.length*100)+"%";$("correct").textContent=correct;
+ $("badge").textContent=`${cat.i} ${cat.l}`;const sc=$("scene");sc.textContent=c.scene;sc.style.animation="none";void sc.offsetWidth;sc.style.animation="";
+ const qw=cat.l.replace("؟","");$("question").innerHTML=c.q.replace(qw,`<mark>${qw}</mark>`);
+ $("choices").innerHTML=c.opts.map((o,i)=>{const[e,t]=o.split("|");return `<button class="qz-c ${done[pos]&&o===c.a?"right":""}" data-i="${i}" ${done[pos]?"disabled":""}><span class="e">${e}</span><span class="t">${t}</span></button>`;}).join("");
+ $("choices").querySelectorAll(".qz-c").forEach(b=>b.onclick=()=>pick(b,c.opts[+b.dataset.i]));
+ $("prev").style.visibility=pos?"visible":"hidden";$("next").textContent=pos===deck.length-1?"إنهاء 🏁":"التالي ←";
+ setTimeout(()=>KV.speak(c.q),350);}
+function pick(b,o){const c=deck[pos];if(done[pos]||b.disabled)return;
+ if(o===c.a){b.classList.add("right","joy");done[pos]=1;correct++;$("correct").textContent=correct;KV.addStar();KV.sfx.win();KV.confetti();
+  $("choices").querySelectorAll(".qz-c").forEach(x=>x.disabled=true);const[e,t]=o.split("|");
+  setTimeout(()=>KV.popup({emoji:e,title:"🎉 "+KV.pick(["أحسنت!","ممتاز!","رائع!","بطل!"]),text:t,sub:c.q,nextLabel:pos===deck.length-1?"🏁 عرض النتيجة":"السؤال التالي ←",onNext:next}),450);}
+ else{b.classList.add("wrong","shake");b.disabled=true;KV.sfx.oops();KV.toast("حاول مرة أخرى 💪");KV.speak("حاول مرة أخرى");}}
+function next(){if(pos<deck.length-1){pos++;show();}else finish();}
+function finish(){KV.hideResume();$("prog").style.width="100%";KV.confetti();KV.sfx.win();
+ KV.popup({emoji:"🏆",title:"🏆 انتهت البطاقات!",text:`${correct} / ${deck.length}`,say:"أحسنت! انتهت البطاقات",nextLabel:"🔁 العب مرة أخرى",onNext:start,closeLabel:"🏠 أنواع الأسئلة",onClose:goHome});}
+function goHome(){KV.hideResume();KV.stopSpeech();$("play").style.display="none";$("home").style.display="block";renderHome();}
+$("start").onclick=start;$("prev").onclick=()=>{if(pos>0){pos--;show();}};$("next").onclick=next;$("homeB").onclick=goHome;
+$("readQ").onclick=()=>KV.speak(deck[pos].q);
+$("readAll").onclick=()=>KV.speak(deck[pos].q+" "+deck[pos].opts.map(o=>o.split("|")[1]).join("، أو "));
+document.addEventListener("keydown",e=>{if(/^[1-4]$/.test(e.key)&&$("play").style.display==="block"&&!document.querySelector(".overlay.show")){const b=$("choices").children[+e.key-1];b&&!b.disabled&&b.click();}});
+renderHome();KV.bumpPlay("wh-flashcards");
+</script>
+</body></html>

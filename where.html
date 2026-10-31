@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.scene{height:300px;position:relative;margin:10px auto 6px;width:min(420px,100%);border-radius:24px;background:linear-gradient(#e8f6ff,#fff3dc);border:3px solid var(--line);overflow:hidden}
+.ground{position:absolute;bottom:0;left:0;right:0;height:46px;background:#cdb38c}
+.ref,.obj{position:absolute;line-height:1;transition:.4s}
+.ref{font-size:130px;left:50%;bottom:40px;transform:translateX(-50%);z-index:2}
+.obj{font-size:64px;z-index:3}
+</style></head><body>
+<main><div class="panel qz">
+<div class="qz-top"><span class="muted" id="prog"></span><span style="font-weight:800">✅ <span id="score">0</span></span></div>
+<div class="scene"><div class="ground"></div><div class="ref" id="ref"></div><div class="obj" id="obj"></div></div>
+<div class="qz-q" id="q"></div>
+<div class="row"><button class="ghost" id="read">🔊 اقرأ السؤال</button><button class="ghost" id="skip">تخطَّ ←</button></div>
+<div class="qz-ch" id="choices"></div>
+</div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"أين هو؟",sub:"انظر إلى الصورة واختر الكلمة التي تدل على المكان",icon:"📍"});
+const {$}=KV;
+const OBJ=[{e:"🐱",n:"القطة"},{e:"⚽",n:"الكرة"},{e:"🐶",n:"الكلب"},{e:"🧸",n:"الدبدوب"},{e:"🐦",n:"العصفور"},{e:"🍎",n:"التفاحة"}];
+const REF=[{e:"📦",n:"الصندوق",inside:1},{e:"🪑",n:"الكرسي"},{e:"🛏️",n:"السرير"},{e:"🚗",n:"السيارة",inside:1},{e:"🌳",n:"الشجرة"},{e:"🏠",n:"البيت",inside:1}];
+const POS={"فوق":{left:"50%",bottom:"175px",zIndex:3,fontSize:"64px"},"تحت":{left:"50%",bottom:"6px",zIndex:3,fontSize:"54px"},"بجانب":{left:"calc(50% + 95px)",bottom:"44px",zIndex:3,fontSize:"64px"},"أمام":{left:"50%",bottom:"20px",zIndex:4,fontSize:"82px"},"خلف":{left:"calc(50% - 40px)",bottom:"120px",zIndex:1,fontSize:"56px"},"داخل":{left:"50%",bottom:"70px",zIndex:3,fontSize:"50px"}};
+const NAMES=Object.keys(POS);let deck=[],i=0,score=0,lock=false;
+function makeDeck(){deck=[];for(let k=0;k<10;k++){const r=KV.pick(REF),o=KV.pick(OBJ),opts=NAMES.filter(n=>n!=="داخل"||r.inside);deck.push({r,o,p:KV.pick(opts),opts});}i=0;score=0;$("score").textContent=0;show();}
+function show(){KV.hideResume();lock=false;const c=deck[i];$("prog").textContent=`السؤال ${i+1} من ${deck.length}`;
+ const rf=$("ref");rf.textContent=c.r.e;rf.style.opacity=c.p==="داخل"?.75:1;rf.style.bottom=c.p==="تحت"?"78px":"40px";
+ const ob=$("obj");ob.textContent=c.o.e;ob.removeAttribute("style");Object.assign(ob.style,POS[c.p],{transform:"translateX(-50%)"});
+ $("q").textContent=`أين ${c.o.n}؟`;
+ const ch=KV.shuffle([c.p,...KV.shuffle(c.opts.filter(n=>n!==c.p)).slice(0,2)]);
+ $("choices").innerHTML=ch.map(n=>`<button class="qz-c" data-n="${n}">${n} ${c.r.n}</button>`).join("");
+ $("choices").querySelectorAll(".qz-c").forEach(b=>b.onclick=()=>ans(b));setTimeout(()=>KV.speak($("q").textContent),300);}
+const next=()=>{if(i<deck.length-1){i++;show();}else makeDeck();};
+function ans(b){if(lock||b.disabled)return;const c=deck[i];KV.speak(b.textContent);
+ if(b.dataset.n===c.p){lock=true;b.classList.add("right","joy");score++;$("score").textContent=score;KV.sfx.star();KV.addStar();
+  const last=i===deck.length-1;if(last){KV.confetti();KV.sfx.win();}
+  setTimeout(()=>KV.popup({emoji:c.o.e+c.r.e,title:last?"🏆 انتهت الأسئلة!":"🎉 إجابة صحيحة!",text:`${c.o.n} ${c.p} ${c.r.n}`,sub:last?`النتيجة: ${score} من ${deck.length}`:"قل الجملة كاملة 🗣️",nextLabel:last?"🔁 العب مرة أخرى":"السؤال التالي ←",onNext:next}),400);}
+ else{b.classList.add("wrong","shake");b.disabled=true;KV.sfx.oops();KV.toast("حاول مرة أخرى 💪");}}
+$("read").onclick=()=>KV.speak($("q").textContent);$("skip").onclick=next;makeDeck();KV.bumpPlay("where");
+</script>
+</body></html>

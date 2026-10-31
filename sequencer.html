@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.slots,.pool{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:16px}
+.slot{min-height:190px;border:3px dashed var(--line);border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;background:rgba(255,255,255,.3);cursor:pointer}
+.slot .num{position:absolute;top:8px;right:12px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800}
+.slot.wrong{border-color:var(--bad);animation:kvshake .45s}.slot.right{border-color:var(--good);border-style:solid;background:#e3f6ea}
+.scard{background:var(--card);border:3px solid var(--line);border-radius:22px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:var(--shadow);transition:.2s;min-height:170px;justify-content:center;width:100%}
+.scard:hover{transform:translateY(-4px);border-color:var(--accent)}
+.scard .e{font-size:64px}.scard .t{font-weight:700;font-size:17px;text-align:center}
+.slot .scard{box-shadow:none;border:none;background:transparent;min-height:0}
+</style></head><body>
+<main><div class="panel">
+<div class="row" style="justify-content:space-between;margin-bottom:10px"><span class="muted" id="prog"></span><div class="seg" id="len"><button data-v="3">3 صور</button><button data-v="4">4 صور</button></div></div>
+<h2 class="center" style="font-size:26px;margin-bottom:6px" id="title"></h2><p class="muted center" style="margin-bottom:14px">اضغط على الصور بالترتيب الصحيح: ماذا حدث أولًا؟ ثم؟ وفي النهاية؟</p>
+<div class="slots" id="slots"></div><div class="pool" id="pool"></div>
+<div class="row"><button class="ghost" id="read">🔊 اقرأ الصور</button><button class="ghost" id="clear">🧹 إعادة</button><button class="btn" id="check">✅ تحقق</button><button class="ghost" id="skip">قصة أخرى ←</button></div>
+</div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"ترتيب القصة",sub:"رتّب صور القصة بالترتيب الصحيح",icon:"📚"});
+const {$}=KV;
+const STORIES=[["زراعة نبتة",["🌱|نضع البذرة في التراب","💧|نسقي البذرة بالماء","🌿|تنمو النبتة","🌻|تتفتح الزهرة"]],["غسل اليدين",["🚰|نفتح الماء","🧼|نضع الصابون","🙌|نفرك اليدين","🧻|ننشف اليدين"]],["الذهاب إلى المدرسة",["😴|الولد نائم","⏰|يرن المنبه","🪥|يغسل أسنانه","🎒|يذهب إلى المدرسة"]],["صنع الكعكة",["🥚|نخلط البيض والطحين","🔥|نخبز الكعكة في الفرن","🎂|نزيّن الكعكة","😋|نأكل الكعكة"]],["رجل الثلج",["❄️|يتساقط الثلج","⛄|نصنع رجل الثلج","☀️|تشرق الشمس","💧|يذوب رجل الثلج"]],["حياة الفراشة",["🥚|بيضة صغيرة على ورقة","🐛|تخرج اليرقة وتأكل","🍂|تصنع اليرقة شرنقة","🦋|تخرج الفراشة وتطير"]],["إرسال رسالة",["✍️|نكتب الرسالة","✉️|نضعها في الظرف","📮|نضعها في صندوق البريد","📬|تصل الرسالة"]],["رحلة بالقطار",["🎫|نشتري التذكرة","🚉|ننتظر في المحطة","🚆|نركب القطار","🏙️|نصل إلى المدينة"]],["وقت النوم",["🛁|يستحم الطفل","👕|يلبس ملابس النوم","📖|تقرأ أمه قصة","😴|ينام الطفل"]],["عصير البرتقال",["🍊|نشتري البرتقال","🔪|نقطع البرتقال","🥤|نعصر البرتقال","😋|نشرب العصير"]]];
+let L=+(localStorage.getItem("kvSeqLen")||3),order=KV.shuffle([...STORIES.keys()]),si=0,steps=[],placed=[],pool=[];
+function load(){KV.hideResume();const st=STORIES[order[si%order.length]];steps=st[1].slice(0,L).map((s,i)=>{const[e,t]=s.split("|");return{e,t,i};});
+ placed=Array(L).fill(null);do{pool=KV.shuffle(steps);}while(pool.every((p,i)=>p.i===i));
+ $("title").textContent="📖 "+st[0];$("prog").textContent=`القصة ${si%order.length+1} من ${order.length}`;$("len").querySelectorAll("button").forEach(b=>b.classList.toggle("on",+b.dataset.v===L));draw();}
+const card=s=>`<div class="scard"><span class="e">${s.e}</span><span class="t">${s.t}</span></div>`;
+function draw(){$("slots").innerHTML=placed.map((p,i)=>`<div class="slot" data-i="${i}"><span class="num">${i+1}</span>${p?card(p):'<span class="muted">؟</span>'}</div>`).join("");
+ $("pool").innerHTML=pool.map((p,i)=>p?`<button class="scard" data-i="${i}"><span class="e">${p.e}</span><span class="t">${p.t}</span></button>`:"<div></div>").join("");
+ $("pool").querySelectorAll(".scard").forEach(b=>b.onclick=()=>{const p=pool[+b.dataset.i],k=placed.indexOf(null);if(k<0)return;placed[k]=p;pool[+b.dataset.i]=null;KV.sfx.flip();KV.speak(p.t);draw();});
+ $("slots").querySelectorAll(".slot").forEach(s=>s.onclick=()=>{const i=+s.dataset.i,p=placed[i];if(!p)return;placed[i]=null;pool[pool.indexOf(null)]=p;draw();});}
+const nextStory=()=>{si++;load();};
+$("check").onclick=()=>{if(placed.includes(null))return KV.toast("ضع كل الصور في المربعات أولًا");
+ const ok=placed.every((p,i)=>p.i===i);const sl=$("slots").querySelectorAll(".slot");
+ placed.forEach((p,i)=>sl[i].classList.add(p.i===i?"right":"wrong"));
+ if(ok){KV.sfx.win();KV.confetti();KV.addStar(2);setTimeout(()=>KV.popup({emoji:steps.map(s=>s.e).join(""),title:"🎉 ترتيب صحيح!",text:"أحسنت!",sub:"احكِ القصة بكلماتك: أولًا… ثم… وفي النهاية… 🗣️",say:"أحسنت! "+steps.map(s=>s.t).join("، ثم "),nextLabel:"القصة التالية ←",onNext:nextStory}),400);}
+ else{KV.sfx.oops();KV.toast("بعض الصور في المكان الخطأ، حاول مرة أخرى 💪");setTimeout(()=>{placed.forEach((p,i)=>{if(p.i!==i){pool[pool.indexOf(null)]=p;placed[i]=null;}});draw();},900);}};
+$("clear").onclick=load;$("skip").onclick=nextStory;
+$("read").onclick=()=>{const ws=[...placed.filter(Boolean),...pool.filter(Boolean)];KV.speak(ws.map(s=>s.t).join("، "));};
+$("len").querySelectorAll("button").forEach(b=>b.onclick=()=>{L=+b.dataset.v;localStorage.setItem("kvSeqLen",L);load();});
+load();KV.bumpPlay("sequencer");
+</script>
+</body></html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.top{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.timer{font-family:'Baloo Bhaijaan 2';font-size:34px;font-weight:800;min-width:90px;text-align:center;padding:4px 16px;border-radius:16px;background:var(--card);border:3px solid var(--line)}
+.timer.low{color:var(--bad);border-color:var(--bad);animation:kvjoy .5s infinite}
+.goal{font-size:28px;text-align:center;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+.it{background:var(--card);border:3px solid var(--line);border-radius:20px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:var(--shadow);transition:.2s}
+.it:hover{transform:translateY(-3px)}
+.it .e{font-size:52px}.it .t{font-weight:800;font-size:17px}
+.it.ok{background:#e3f6ea;border-color:var(--good);color:#1d5b38}.it.no{background:#fde6e6;border-color:var(--bad);opacity:.6}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.cat{background:var(--card);border:3px solid var(--line);border-radius:20px;padding:14px;font-weight:800;font-size:20px}
+.cat .e{font-size:44px;display:block}
+</style></head><body>
+<main>
+<section id="home" class="panel center"><h2 style="margin-bottom:6px">اختر التصنيف</h2><p class="muted" style="margin-bottom:14px">جد كل الأشياء التي تنتمي للتصنيف قبل انتهاء الوقت!</p>
+<div class="cats" id="cats"></div>
+<div class="row"><b>الوقت:</b><div class="seg" id="tsel"><button data-v="30">30 ث</button><button data-v="60">60 ث</button><button data-v="90">90 ث</button><button data-v="0">بدون وقت</button></div></div></section>
+<section id="play" style="display:none"><div class="top"><div class="timer" id="timer">60</div><span style="font-weight:800;font-size:20px">✅ <span id="got">0</span> / <span id="need">0</span></span><button class="ghost" id="back">↩️ تصنيف آخر</button></div>
+<h2 class="goal" id="goal"></h2><div class="grid" id="grid"></div></section>
+</main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"سيد التصنيفات",sub:"جد كل العناصر في التصنيف قبل انتهاء الوقت",icon:"🧺"});
+const {$}=KV;
+const C={"حيوانات":["🐾","🐶|كلب,🐱|قطة,🦁|أسد,🐘|فيل,🐰|أرنب,🐒|قرد,🦒|زرافة,🐄|بقرة,🐫|جمل,🐴|حصان"],"فواكه":["🍎","🍎|تفاحة,🍌|موز,🍇|عنب,🍊|برتقال,🍓|فراولة,🍉|بطيخ,🍐|كمثرى,🍑|خوخ,🍍|أناناس,🥭|مانجو"],"خضار":["🥕","🥕|جزر,🥒|خيار,🍅|طماطم,🧅|بصل,🥔|بطاطس,🥦|بروكلي,🌽|ذرة,🥬|خس,🍆|باذنجان,🫑|فلفل"],"ملابس":["👕","👕|قميص,👖|بنطال,👗|فستان,🧥|معطف,🧦|جوارب,🧢|قبعة,👟|حذاء,🧣|وشاح,🧤|قفازات,🩳|شورت"],"وسائل النقل":["🚗","🚗|سيارة,🚌|حافلة,🚆|قطار,✈️|طائرة,🚢|سفينة,🚲|دراجة,🚁|مروحية,🚑|إسعاف,🚚|شاحنة,🛵|دراجة نارية"],"أدوات المطبخ":["🍳","🍳|مقلاة,🥄|ملعقة,🍴|شوكة,🔪|سكين,🍽️|صحن,☕|كوب,🫖|إبريق,🥣|وعاء,🧂|مملحة,🍶|جرة"],"ألعاب":["🧸","🧸|دب,⚽|كرة,🪁|طائرة ورقية,🎲|نرد,🧩|أحجية,🪀|يويو,🎈|بالون,🪆|دمية,🛝|زحليقة,🎮|ألعاب فيديو"],"حيوانات البحر":["🐟","🐟|سمكة,🐋|حوت,🐬|دلفين,🦈|قرش,🐙|أخطبوط,🦀|سلطعون,🐢|سلحفاة,🦑|حبار,🦭|فقمة,🐠|سمكة ملونة"]};
+const P=s=>s.split(",").map(x=>{const[e,t]=x.split("|");return{e,t};});
+let T=+(localStorage.getItem("kvCatT")||60),timer=null,left=0,need=0,got=0,cur="";
+$("cats").innerHTML=Object.entries(C).map(([k,v])=>`<button class="cat" data-k="${k}"><span class="e">${v[0]}</span>${k}</button>`).join("");
+$("cats").querySelectorAll(".cat").forEach(b=>b.onclick=()=>start(b.dataset.k));
+$("tsel").querySelectorAll("button").forEach(b=>{b.classList.toggle("on",+b.dataset.v===T);b.onclick=()=>{T=+b.dataset.v;localStorage.setItem("kvCatT",T);$("tsel").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));};});
+function start(k){KV.hideResume();cur=k;clearInterval(timer);const mine=P(C[k][1]),own=KV.shuffle(mine).slice(0,5);
+ const others=KV.shuffle(Object.keys(C).filter(x=>x!==k).flatMap(x=>P(C[x][1]))).filter(o=>!mine.some(m=>m.t===o.t)).filter((o,i,a)=>a.findIndex(x=>x.t===o.t)===i).slice(0,7);
+ const items=KV.shuffle([...own.map(o=>({...o,ok:1})),...others]);need=own.length;got=0;$("got").textContent=0;$("need").textContent=need;
+ $("goal").textContent=`${C[k][0]} جد كل: ${k}`;$("home").style.display="none";$("play").style.display="block";
+ $("grid").innerHTML=items.map((o,i)=>`<button class="it" data-i="${i}"><span class="e">${o.e}</span><span class="t">${o.t}</span></button>`).join("");
+ $("grid").querySelectorAll(".it").forEach(b=>b.onclick=()=>tap(b,items[+b.dataset.i]));
+ KV.speak("جد كل "+k);left=T;const el=$("timer");el.classList.remove("low");el.textContent=T?left:"∞";
+ if(T)timer=setInterval(()=>{left--;el.textContent=left;if(left<=10)el.classList.add("low");if(left<=10&&left>0)KV.sfx.tick();if(left<=0){clearInterval(timer);end(false);}},1000);}
+function tap(b,o){if(b.disabled)return;b.disabled=true;KV.speak(o.t);
+ if(o.ok){b.classList.add("ok","joy");KV.sfx.star();KV.addStar();got++;$("got").textContent=got;if(got===need){clearInterval(timer);setTimeout(()=>end(true),500);}}
+ else{b.classList.add("no","shake");KV.sfx.oops();}}
+function end(win){$("grid").querySelectorAll(".it").forEach(b=>b.disabled=true);
+ if(win){KV.confetti();KV.sfx.win();KV.popup({emoji:"🏆",title:"🎉 وجدتها كلها!",text:cur,sub:T?`بقي ${left} ثانية ⏱️`:"",say:"أحسنت! وجدت كل "+cur,nextLabel:"🔁 العب مرة أخرى",onNext:()=>start(cur)});}
+ else{KV.sfx.oops();KV.popup({emoji:"⏰",title:"انتهى الوقت!",text:`وجدت ${got} من ${need}`,sub:"حاول مرة أخرى، أنت تستطيع! 💪",nextLabel:"🔁 حاول مرة أخرى",onNext:()=>start(cur)});}}
+function back(){KV.hideResume();clearInterval(timer);$("play").style.display="none";$("home").style.display="block";}
+$("back").onclick=back;KV.bumpPlay("category");
+</script>
+</body></html>

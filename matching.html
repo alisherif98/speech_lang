@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.board{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));perspective:900px}
+.card{aspect-ratio:3/4;position:relative;transform-style:preserve-3d;transition:transform .5s;cursor:pointer}
+.card.open,.card.done{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:20px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid var(--line);box-shadow:var(--shadow)}
+.back{background:repeating-linear-gradient(45deg,var(--accent),var(--accent) 12px,#f0a07a 12px,#f0a07a 24px);color:#fff;font-size:48px;font-weight:800}
+.front{background:var(--card);transform:rotateY(180deg)}
+.front .e{font-size:clamp(40px,7vw,64px)}.front .t{font-weight:800;font-size:19px;margin-top:4px}
+.card.done .front{border-color:var(--good);background:#e3f6ea;color:#1d5b38}
+.stat{display:flex;gap:16px;justify-content:center;margin-bottom:14px;font-weight:800;font-size:18px;flex-wrap:wrap;align-items:center}
+</style></head><body>
+<main>
+ <div class="stat"><span>🔁 المحاولات: <b id="moves">0</b></span><span>✅ الأزواج: <b id="pairs">0</b> / <b id="total">0</b></span><button class="ghost" id="pickBtn">📝 تغيير الكلمات</button><button class="ghost" id="again">🔀 خلط من جديد</button></div>
+ <div class="board" id="board"></div>
+</main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"لعبة المطابقة",sub:"اقلب بطاقتين وابحث عن الأزواج المتشابهة",icon:"🃏"});
+const {$}=KV;let words=[],open=[],lock=false,moves=0,found=0;
+function deal(){KV.hideResume();
+ const cards=KV.shuffle([...words,...words]);open=[];moves=0;found=0;lock=false;
+ $("moves").textContent=0;$("pairs").textContent=0;$("total").textContent=words.length;
+ $("board").innerHTML=cards.map(c=>`<div class="card" data-w="${c.w}"><div class="face back">؟</div><div class="face front"><span class="e">${c.e}</span><span class="t">${c.w}</span></div></div>`).join("");
+ $("board").querySelectorAll(".card").forEach(el=>el.onclick=()=>flip(el));}
+function flip(el){
+ if(lock||el.classList.contains("open")||el.classList.contains("done"))return;
+ el.classList.add("open");KV.sfx.flip();KV.speak(el.dataset.w);open.push(el);
+ if(open.length<2)return;moves++;$("moves").textContent=moves;lock=true;const [a,b]=open;
+ if(a.dataset.w===b.dataset.w){
+  setTimeout(()=>{a.classList.add("done");b.classList.add("done");a.classList.remove("open");b.classList.remove("open");open=[];lock=false;found++;$("pairs").textContent=found;KV.sfx.star();KV.addStar();
+   const w=words.find(x=>x.w===a.dataset.w);
+   if(found===words.length){KV.confetti();KV.sfx.win();setTimeout(()=>KV.popup({emoji:"🏆",title:"🎉 وجدت كل الأزواج!",text:`في ${moves} محاولة`,say:"أحسنت! وجدت كل الأزواج",nextLabel:"🔁 العب مرة أخرى",onNext:deal}),500);}
+   else KV.popup({emoji:w.e,title:"🎉 وجدت زوجًا!",text:w.w,sub:"قل الكلمة بصوت عالٍ 🗣️",nextLabel:"تابع اللعب ←",onNext:()=>{},onClose:()=>{}});
+  },500);
+ }else{setTimeout(()=>{a.classList.remove("open");b.classList.remove("open");open=[];lock=false;},1100);}}
+const pick=()=>KV.wordPicker({key:"matching",min:2,max:10,onDone:w=>{words=w;deal();}});
+$("pickBtn").onclick=pick;$("again").onclick=deal;
+const s=KV.savedWords("matching");if(s){words=s.sel;deal();}else pick();KV.bumpPlay("matching");
+</script>
+</body></html>

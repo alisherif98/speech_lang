@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.wrap{display:grid;grid-template-columns:1fr 300px;gap:18px}@media(max-width:820px){.wrap{grid-template-columns:1fr}}
+.stage{min-height:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.monster{font-size:150px;line-height:1;transition:transform .35s cubic-bezier(.3,1.6,.5,1);user-select:none;filter:drop-shadow(0 10px 10px rgba(0,0,0,.15))}
+.monster.eat{animation:eat .4s}
+@keyframes eat{30%{transform:scale(var(--s)) scaleY(.8)}60%{transform:scale(var(--s)) scaleY(1.15)}}
+.monster.wobble{animation:wob .25s infinite}
+@keyframes wob{25%{rotate:-6deg}75%{rotate:6deg}}
+.boom{font-size:180px;animation:kvpop .4s}
+.belly{margin-top:16px;font-weight:800;font-size:20px}
+.fly{position:fixed;font-size:56px;z-index:70;transition:all .55s cubic-bezier(.5,-0.3,.6,1);pointer-events:none}
+.snacks{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.snack{background:var(--bg1);border:3px solid var(--line);border-radius:18px;padding:10px;display:flex;flex-direction:column;align-items:center;transition:.2s}
+.snack:hover{transform:translateY(-3px);border-color:var(--accent)}
+.snack .e{font-size:44px}.snack .t{font-weight:800;font-size:18px}
+</style></head><body>
+<main>
+<div class="row" id="who" style="margin-bottom:12px"></div>
+<div class="wrap">
+ <div class="panel stage"><div class="monster" id="mon">👾</div><div class="belly" id="belly">أطعمني! 😋</div></div>
+ <div class="panel"><h3 style="margin-bottom:6px">🍽️ الوجبات</h3><p class="muted" style="margin-bottom:10px;font-size:14px">اضغط على وجبة وقل الكلمة، ثم أطعمها للوحش. متى سينفجر؟ 🤫</p>
+ <div class="snacks" id="snacks"></div>
+ <div class="row" style="margin-top:12px"><button class="ghost" id="pickBtn">📝 تغيير الكلمات</button><button class="ghost" id="reset">🔁 وحش جديد</button></div></div>
+</div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"أطعم الوحش",sub:"أطعمه حتى ينفجر عند رقم سري!",icon:"👾"});
+const {$}=KV;
+const MON=[{e:"👾",n:"الوحش",end:"💥",msg:"بوووم! انفجر الوحش"},{e:"🦈",n:"القرش",end:"🫧",msg:"تجشّأ القرش! بررررب"},{e:"🐊",n:"التمساح",end:"🤧",msg:"عطس التمساح! هاتشوو"},{e:"🐲",n:"التنين",end:"🔥",msg:"نفخ التنين نارًا!"}];
+let m=MON[0],words=[],count=0,secret=0,done=false;
+$("who").innerHTML=MON.map((x,i)=>`<button class="ghost" data-i="${i}" style="font-size:20px">${x.e} ${x.n}</button>`).join("");
+$("who").querySelectorAll("button").forEach(b=>b.onclick=()=>{m=MON[+b.dataset.i];reset();});
+function reset(){KV.hideResume();count=0;done=false;secret=5+Math.floor(Math.random()*11);const el=$("mon");el.className="monster";el.textContent=m.e;el.style.setProperty("--s",1);el.style.transform="scale(1)";$("belly").textContent=`أنا ${m.n}، أطعمني! 😋`;
+ $("snacks").innerHTML=words.map((w,i)=>`<button class="snack" data-i="${i}"><span class="e">${w.e}</span><span class="t">${w.w}</span></button>`).join("");
+ $("snacks").querySelectorAll(".snack").forEach(b=>b.onclick=()=>feed(b,words[+b.dataset.i]));}
+function feed(btn,w){if(done)return;KV.speak(w.w);
+ const r=btn.getBoundingClientRect(),t=$("mon").getBoundingClientRect(),f=document.createElement("div");f.className="fly";f.textContent=w.e;f.style.left=r.left+r.width/2-28+"px";f.style.top=r.top+"px";document.body.appendChild(f);
+ requestAnimationFrame(()=>{f.style.left=t.left+t.width/2-28+"px";f.style.top=t.top+t.height/2-28+"px";f.style.transform="scale(.3)";f.style.opacity=".4";});
+ setTimeout(()=>{f.remove();if(done)return;count++;KV.sfx.chomp();const s=1+count*0.06,el=$("mon");el.style.setProperty("--s",s);el.style.transform=`scale(${s})`;el.classList.remove("eat");void el.offsetWidth;el.classList.add("eat");
+  $("belly").textContent=`عدد الوجبات: ${count} 😋`;KV.addStar();
+  if(count>=secret-2)el.classList.add("wobble");
+  if(count===secret){done=true;setTimeout(()=>{el.className="monster boom";el.style.transform="scale(1)";el.textContent=m.end;KV.sfx.pop();KV.confetti();$("belly").textContent=m.msg;
+   KV.popup({emoji:m.end,title:"🎉 "+m.msg,text:`الرقم السري كان ${secret}`,say:m.msg+". الرقم السري كان "+secret,nextLabel:"🔁 وحش جديد",onNext:reset});},500);}
+ },580);}
+const pick=()=>KV.wordPicker({key:"feed",min:2,max:8,onDone:w=>{words=w;reset();}});
+$("pickBtn").onclick=pick;$("reset").onclick=reset;
+const s=KV.savedWords("feed");if(s){words=s.sel;reset();}else pick();KV.bumpPlay("feed-monster");
+</script>
+</body></html>

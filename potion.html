@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media(max-width:820px){.wrap{grid-template-columns:1fr}}
+.inst{font-size:clamp(22px,3.6vw,30px);font-weight:800;font-family:'Baloo Bhaijaan 2';text-align:center;margin-bottom:10px;line-height:1.6}
+.steps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+.st{width:56px;height:56px;border-radius:16px;border:3px dashed var(--line);display:grid;place-items:center;font-size:32px;background:var(--bg1)}
+.st.done{border-style:solid;border-color:var(--good);background:#e3f6ea}
+.cauldron{position:relative;height:260px;display:flex;align-items:flex-end;justify-content:center}
+.pot{width:220px;height:150px;background:#3b3b4f;border-radius:0 0 110px 110px;position:relative;box-shadow:inset 0 -20px 0 rgba(0,0,0,.25)}
+.pot::before{content:"";position:absolute;top:-16px;left:-14px;right:-14px;height:30px;border-radius:50%;background:#55556e}
+.liquid{position:absolute;top:-8px;left:2px;right:2px;height:22px;border-radius:50%;background:var(--pc,#7be37b);transition:background .6s;z-index:1}
+.bub{position:absolute;bottom:150px;font-size:24px;animation:up 1.6s ease-out forwards;z-index:2}
+@keyframes up{to{transform:translateY(-120px);opacity:0}}
+.drop{position:absolute;font-size:48px;z-index:3;animation:dropin .6s ease-in forwards}
+@keyframes dropin{from{transform:translateY(-140px)}to{transform:translateY(0);opacity:0}}
+.shelf{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ing{background:var(--bg1);border:3px solid var(--line);border-radius:18px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;transition:.2s}
+.ing:hover{transform:translateY(-3px);border-color:var(--accent)}
+.ing .e{font-size:42px}.ing .t{font-weight:800;font-size:16px}
+</style></head><body>
+<main>
+<div class="row" style="margin-bottom:12px"><b>عدد الخطوات:</b><div class="seg" id="lvl"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button></div></div>
+<div class="wrap">
+ <div class="panel"><div class="inst" id="inst"></div><div class="steps" id="steps"></div><div class="row"><button class="ghost" id="read">🔊 اسمع التعليمات</button><button class="ghost" id="hide">🙈 إخفاء الكتابة</button><button class="ghost" id="reset">🔁 وصفة جديدة</button></div>
+ <div class="cauldron" id="caul"><div class="pot"><div class="liquid" id="liq"></div></div></div></div>
+ <div class="panel"><h3 style="margin-bottom:10px">🧪 المكوّنات</h3><div class="shelf" id="shelf"></div></div>
+</div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"وصفة الجرعة السحرية",sub:"اتبع التعليمات خطوة بخطوة",icon:"🧪"});
+const {$}=KV;
+const ING=[["⭐","النجمة"],["🍎","التفاحة"],["🍄","الفطر"],["🪶","الريشة"],["💎","الجوهرة"],["🌸","الزهرة"],["🐸","الضفدع"],["🌶️","الفلفل"],["🧀","الجبن"],["🦴","العظمة"],["🍯","العسل"],["🌙","القمر"]];
+const COLORS=["#7be37b","#f25c54","#7d6bd6","#f7b538","#3d9ad1","#e76f9a","#8cb369","#ff9f43"];
+let L=+(localStorage.getItem("kvPotL")||2),target=[],k=0,hidden=false;
+$("shelf").innerHTML=ING.map((x,i)=>`<button class="ing" data-i="${i}"><span class="e">${x[0]}</span><span class="t">${x[1]}</span></button>`).join("");
+$("shelf").querySelectorAll(".ing").forEach(b=>b.onclick=()=>add(+b.dataset.i,b));
+function text(){if(L===1)return`ضع ${ING[target[0]][1]} في القِدر`;return target.map((t,i)=>`${i===0?"أولًا ضع":i===L-1?"وأخيرًا":"ثم"} ${ING[t][1]}`).join("، ");}
+function newRecipe(){KV.hideResume();target=KV.shuffle([...ING.keys()]).slice(0,L);k=0;$("liq").style.setProperty("--pc","#7be37b");
+ $("lvl").querySelectorAll("button").forEach(b=>b.classList.toggle("on",+b.dataset.v===L));render();setTimeout(()=>KV.speak(text()),300);}
+function render(){$("inst").textContent=hidden?"👂 استمع للتعليمات":text();$("steps").innerHTML=target.map((t,i)=>`<div class="st ${i<k?"done":""}">${i<k?ING[t][0]:i+1}</div>`).join("");}
+function add(i,b){if(k>=L)return;KV.speak(ING[i][1]);const c=$("caul"),d=document.createElement("div");d.className="drop";d.textContent=ING[i][0];c.appendChild(d);setTimeout(()=>d.remove(),650);
+ if(i===target[k]){k++;KV.sfx.bubble();$("liq").style.setProperty("--pc",COLORS[(k+target[0])%COLORS.length]);for(let n=0;n<4;n++){const bb=document.createElement("div");bb.className="bub";bb.textContent=KV.pick(["🫧","✨","💜"]);bb.style.left=(35+Math.random()*30)+"%";bb.style.animationDelay=n*.15+"s";c.appendChild(bb);setTimeout(()=>bb.remove(),2000);}render();
+  if(k===L){KV.addStar(L);KV.sfx.win();KV.confetti();setTimeout(()=>KV.popup({emoji:"🧪✨",title:"🎉 صنعت الجرعة السحرية!",text:"اتبعت التعليمات بشكل صحيح",nextLabel:"وصفة جديدة ←",onNext:newRecipe}),700);}}
+ else{b.classList.add("shake");setTimeout(()=>b.classList.remove("shake"),500);KV.sfx.oops();KV.toast("ليس بعد! استمع مرة أخرى 👂");$("liq").style.setProperty("--pc","#6b5b4b");setTimeout(()=>KV.speak(text()),700);}}
+$("lvl").querySelectorAll("button").forEach(b=>b.onclick=()=>{L=+b.dataset.v;localStorage.setItem("kvPotL",L);newRecipe();});
+$("read").onclick=()=>KV.speak(text());$("reset").onclick=newRecipe;$("hide").onclick=()=>{hidden=!hidden;$("hide").textContent=hidden?"👁️ إظهار الكتابة":"🙈 إخفاء الكتابة";render();};
+newRecipe();KV.bumpPlay("potion");
+</script>
+</body></html>

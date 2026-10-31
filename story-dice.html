@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.dice{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:12px 0 18px}
+.die{background:var(--card);border:3px solid var(--line);border-radius:26px;padding:16px;text-align:center;box-shadow:var(--shadow);position:relative}
+.die .lab{font-weight:800;color:#fff;padding:4px 14px;border-radius:999px;display:inline-block;margin-bottom:6px}
+.die .e{font-size:76px;line-height:1.2;display:block}.die .t{font-size:22px;font-weight:800}
+.die.roll .e{animation:rl .6s}
+@keyframes rl{0%{transform:rotate(0) scale(.6)}50%{transform:rotate(200deg) scale(1.15)}100%{transform:rotate(360deg) scale(1)}}
+.die .lock{position:absolute;top:8px;left:10px;font-size:20px;background:none;opacity:.5}
+.die.locked{border-color:var(--accent2)}.die.locked .lock{opacity:1}
+.scaf{display:grid;gap:10px}
+.step{display:flex;gap:12px;align-items:center;background:var(--bg1);border:2px solid var(--line);border-radius:16px;padding:12px;font-size:20px}
+.step b{background:var(--accent);color:#fff;border-radius:12px;padding:4px 12px;white-space:nowrap}
+</style></head><body>
+<main><div class="panel">
+<div class="center"><button class="btn big" id="roll">🎲 ارمِ حجر النرد</button></div>
+<div class="dice" id="dice"></div>
+<h3 style="margin-bottom:10px">🧩 ابنِ قصتك:</h3><div class="scaf" id="scaf"></div>
+<div class="row" style="margin-top:14px"><button class="ghost" id="read">🔊 اقرأ بداية القصة</button><button class="btn alt" id="done">✅ أنهيت قصتي</button></div>
+<p class="hint center">🔒 اضغط على القفل لتثبيت حجر نرد عند الرمي مرة أخرى.</p>
+</div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"حجر نرد القصص",sub:"ارمِ أربعة أحجار واصنع قصة",icon:"📖"});
+const {$}=KV;
+const DICE=[{lab:"مَن؟",c:"#e2683c",v:"👦|ولد,👧|بنت,🐻|دب,🐱|قطة,🧙|ساحر,👑|ملك,🤖|روبوت,🐉|تنين,🦊|ثعلب,👵|جدة"},{lab:"أين؟",c:"#3d9ad1",v:"🏖️|على الشاطئ,🌳|في الغابة,🏰|في القلعة,🚀|في الفضاء,🏫|في المدرسة,🏜️|في الصحراء,🛒|في السوق,🏔️|على الجبل,🌊|تحت البحر,🏠|في البيت"},{lab:"ماذا وجد؟",c:"#7d6bd6",v:"🗝️|مفتاحًا,🎁|هدية,🗺️|خريطة,🥚|بيضة غريبة,🎈|بالونًا,📦|صندوقًا,💎|جوهرة,🪄|عصا سحرية,📜|رسالة,⚽|كرة"},{lab:"ماذا حدث؟",c:"#2f8f83",v:"🌧️|أمطرت بقوة,😢|ضاع الطريق,🎉|بدأت حفلة,💤|نام طويلًا,🌪️|هبّت عاصفة,🤝|وجد صديقًا,🔊|سمع صوتًا غريبًا,🍰|جاع كثيرًا,🌈|ظهر قوس قزح,🐾|رأى آثار أقدام"}];
+const P=s=>s.split(",").map(x=>{const[e,t]=x.split("|");return{e,t};});
+let cur=DICE.map(d=>P(d.v)[0]),locked=[0,0,0,0];
+function draw(){$("dice").innerHTML=DICE.map((d,i)=>`<div class="die ${locked[i]?"locked":""}"><button class="lock" data-i="${i}">${locked[i]?"🔒":"🔓"}</button><span class="lab" style="background:${d.c}">${d.lab}</span><span class="e">${cur[i].e}</span><span class="t">${cur[i].t}</span></div>`).join("");
+ $("dice").querySelectorAll(".lock").forEach(b=>b.onclick=()=>{locked[+b.dataset.i]^=1;draw();});
+ const [w,p,o,e]=cur;
+ $("scaf").innerHTML=[["البداية",`في يوم من الأيام، كان هناك ${w.t} ${p.t}…`],["ثم",`وجد ${w.t} ${o.t}…`],["فجأة",`${e.t}…`],["في النهاية","ماذا حدث في النهاية؟ 🤔"]].map(s=>`<div class="step"><b>${s[0]}</b><span>${s[1]}</span></div>`).join("");}
+function roll(){KV.hideResume();KV.stopSpeech();let k=0;const iv=setInterval(()=>{cur=cur.map((c,i)=>locked[i]?c:KV.pick(P(DICE[i].v)));draw();KV.sfx.tick();
+ $("dice").querySelectorAll(".die").forEach((d,i)=>{if(!locked[i])d.classList.add("roll");});if(++k>6){clearInterval(iv);KV.sfx.bubble();}},90);}
+$("roll").onclick=roll;
+$("read").onclick=()=>KV.speak(`في يوم من الأيام، كان هناك ${cur[0].t} ${cur[1].t}. وجد ${cur[0].t} ${cur[2].t}. فجأة ${cur[3].t}. ماذا حدث في النهاية؟`);
+$("done").onclick=()=>{KV.confetti();KV.sfx.win();KV.addStar(3);KV.popup({emoji:cur.map(c=>c.e).join(""),title:"🎉 قصة رائعة!",text:"أنت راوي قصص ممتاز!",nextLabel:"🎲 قصة جديدة",onNext:()=>{locked=[0,0,0,0];roll();}});};
+draw();roll();KV.bumpPlay("story-dice");
+</script>
+</body></html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style></style></head><body>
+<main><p class="center muted" style="margin-bottom:10px">🎵 الكلمات المتشابهة في النهاية لها نفس الصوت في آخرها، مثل: قمر – شجر</p><div id="qz"></div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"كلمات على نفس الوزن",sub:"أي كلمة تنتهي بنفس الصوت؟ (السجع والقافية)",icon:"🎵"});
+const R=[["🌙|قمر","🌳|شجر"],["🚪|باب","📖|كتاب"],["🏠|بيت","🫒|زيت"],["🐋|حوت","🫐|توت"],["🍌|موز","🌰|لوز"],["🐕|كلب","❤️|قلب"],["✏️|قلم","🚩|علم"],["🦆|بطة","🐈|قطة"],["🐝|نحلة","🌴|نخلة"],["🐘|فيل","🌃|ليل"],["🧄|ثوم","😴|نوم"],["🐫|جمل","⛰️|جبل"],["🐅|نمر","🌧️|مطر"],["🔥|نار","🚆|قطار"],["🥖|خبز","💎|كنز"],["🍯|عسل","🧅|بصل"]];
+const all=R.flat();
+KV.quiz({make:()=>KV.shuffle(R).slice(0,10).map(p=>{const k=Math.random()<.5?0:1,[e,t]=p[k].split("|"),[e2,t2]=p[1-k].split("|");
+ const end=t.slice(-2);const ds=KV.shuffle(all.filter(x=>!p.includes(x)&&!x.split("|")[1].endsWith(end))).slice(0,2).map(x=>{const[a,b]=x.split("|");return{e:a,t:b,ok:false};});
+ return{pic:e,q:`أي كلمة على وزن «${t}»؟`,choices:KV.shuffle([{e:e2,t:t2,ok:true},...ds]),ans:`${t} – ${t2}`,ansEmoji:e+e2,sub:"قل الكلمتين معًا بإيقاع 🎶 هل تعرف كلمة أخرى على نفس الوزن؟"};})});
+KV.bumpPlay("rhyming");
+</script>
+</body></html>

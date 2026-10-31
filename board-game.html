@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style>.wrap{display:grid;grid-template-columns:1fr 280px;gap:18px}@media(max-width:860px){.wrap{grid-template-columns:1fr}}
+.board{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:14px;border-radius:26px;background:linear-gradient(135deg,#a8e6cf,#dcedc1);box-shadow:var(--shadow);border:3px solid var(--line)}
+body.theme-space .board{background:linear-gradient(135deg,#2c2560,#463f80)}
+.sq{aspect-ratio:1;border-radius:14px;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;border:2px solid var(--line);font-size:clamp(20px,3.6vw,34px)}
+.sq .n{position:absolute;top:2px;right:6px;font-size:11px;color:var(--muted);font-weight:800}
+.sq.start{background:#ffe08a}.sq.end{background:#ffb3c7}
+.pawns{position:absolute;bottom:2px;display:flex;gap:1px;font-size:clamp(14px,2.4vw,22px)}
+.p{animation:kvpop .3s}
+.die{font-size:90px;text-align:center;line-height:1.1;cursor:pointer}
+.die.roll{animation:spin .6s linear}
+@keyframes spin{to{transform:rotate(720deg)}}
+.pl{display:flex;align-items:center;gap:8px;padding:8px;border-radius:12px;margin-bottom:6px;border:2px solid var(--line);background:var(--bg1);font-weight:800}
+.pl.turn{border-color:var(--accent);box-shadow:0 0 0 3px rgba(226,104,60,.25)}
+.pl .e{font-size:28px}
+</style></head><body>
+<main>
+<div class="wrap"><div class="board" id="board"></div>
+<div class="panel center">
+ <div class="row" style="margin-bottom:10px"><b>عدد اللاعبين:</b><div class="seg" id="np"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button></div></div>
+ <div id="players"></div>
+ <div class="die" id="die">🎲</div>
+ <button class="btn" id="roll">🎲 ارمِ النرد</button>
+ <div class="row" style="margin-top:12px"><button class="ghost" id="pickBtn">📝 تغيير الكلمات</button><button class="ghost" id="restart">🔁 من البداية</button></div>
+</div></div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"لعبة اللوح",sub:"ارمِ النرد، تحرّك، وقل الكلمة",icon:"🎲"});
+const {$}=KV;const N=30,FACES=["⚀","⚁","⚂","⚃","⚄","⚅"],PAWNS=[{e:"🐰",n:"الأرنب"},{e:"🐻",n:"الدب"},{e:"🦊",n:"الثعلب"}];
+let words=[],nP=+(localStorage.getItem("kvBoardNP")||2),pos=[],turn=0,busy=false,cells=[];
+function order(){const o=[];for(let r=0;r<5;r++){const row=[...Array(6).keys()].map(c=>r*6+c);o.push(...(r%2?row.reverse():row));}return o;}
+function setup(){KV.hideResume();pos=Array(nP).fill(0);turn=0;busy=false;cells=[...Array(N)].map((_,i)=>i===0||i===N-1?null:words[(i-1)%words.length]);
+ $("np").querySelectorAll("button").forEach(b=>b.classList.toggle("on",+b.dataset.v===nP));draw();}
+function draw(){const grid=order();
+ $("board").innerHTML=grid.map(step=>{const c=cells[step];const here=pos.map((p,i)=>p===step?`<span class="p">${PAWNS[i].e}</span>`:"").join("");
+  return `<div class="sq ${step===0?"start":step===N-1?"end":""}"><span class="n">${step+1}</span>${step===0?"🚩":step===N-1?"🏁":c.e}<div class="pawns">${here}</div></div>`;}).join("");
+ $("players").innerHTML=pos.map((p,i)=>`<div class="pl ${i===turn?"turn":""}"><span class="e">${PAWNS[i].e}</span>${PAWNS[i].n}<span class="muted" style="margin-inline-start:auto">المربع ${p+1}</span></div>`).join("");
+ $("roll").textContent=`🎲 ارمِ النرد – دور ${PAWNS[turn].n}`;}
+function roll(){if(busy)return;busy=true;KV.hideResume();const d=$("die");d.classList.remove("roll");void d.offsetWidth;d.classList.add("roll");
+ let k=0;const iv=setInterval(()=>{d.textContent=FACES[Math.floor(Math.random()*6)];KV.sfx.tick();if(++k>8){clearInterval(iv);const v=1+Math.floor(Math.random()*6);d.textContent=FACES[v-1];move(v);}},70);}
+function move(v){let steps=v;const p=turn;const iv=setInterval(()=>{if(steps<=0||pos[p]>=N-1){clearInterval(iv);land(p);return;}pos[p]++;steps--;KV.sfx.flip();draw();},280);}
+function land(p){const pl=PAWNS[p],c=cells[pos[p]];
+ if(pos[p]>=N-1){KV.confetti();KV.sfx.win();KV.addStar(3);KV.popup({emoji:"🏆",title:`🎉 ${pl.n} وصل إلى النهاية!`,text:"أحسنت!",say:pl.n+" وصل إلى النهاية. أحسنت!",nextLabel:"🔁 العب مرة أخرى",onNext:setup});return;}
+ KV.addStar();const nx=()=>{turn=(turn+1)%nP;busy=false;draw();};
+ KV.popup({emoji:c.e,title:`${pl.e} ${pl.n} وقف على…`,text:c.w,sub:"قل الكلمة 3 مرات 🗣️",nextLabel:nP>1?"دور اللاعب التالي ←":"ارمِ مرة أخرى ←",onNext:nx,onClose:nx});}
+$("np").querySelectorAll("button").forEach(b=>b.onclick=()=>{nP=+b.dataset.v;localStorage.setItem("kvBoardNP",nP);setup();});
+$("roll").onclick=roll;$("die").onclick=roll;$("restart").onclick=setup;
+const pick=()=>KV.wordPicker({key:"board",min:2,max:10,onDone:w=>{words=w;setup();}});$("pickBtn").onclick=pick;
+const s=KV.savedWords("board");if(s){words=s.sel;setup();}else pick();KV.bumpPlay("board-game");
+</script>
+</body></html>

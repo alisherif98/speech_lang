@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style></style></head><body>
+<main><div id="qz"></div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"المشاعر",sub:"كيف يشعر؟ تعرّف على المشاعر",icon:"😊"});
+const F=[["😀","سعيد"],["😢","حزين"],["😠","غاضب"],["😨","خائف"],["😲","متفاجئ"],["😴","نعسان"],["🤒","مريض"],["😳","خجول"],["🤢","مشمئز"],["🥱","ملول"],["😌","هادئ"],["🤩","متحمس"]];
+const S=[["🎁","أخذ سامي هدية جميلة. كيف يشعر؟","سعيد"],["💔","انكسرت لعبة ليلى المفضلة. كيف تشعر؟","حزين"],["⛈️","سمع الطفل صوت رعد قوي في الليل. كيف يشعر؟","خائف"],["🧱","هدم أخوه البرج الذي بناه. كيف يشعر؟","غاضب"],["🎂","فتحت الباب فوجدت حفلة مفاجئة لها! كيف تشعر؟","متفاجئ"],["🌙","لعب طوال اليوم وتأخر الوقت. كيف يشعر؟","نعسان"],["🎢","غدًا سيذهب إلى مدينة الملاهي! كيف يشعر؟","متحمس"],["🤒","عنده حرارة وسعال. كيف يشعر؟","مريض"],["🏫","أول يوم في مدرسة جديدة ولا يعرف أحدًا. كيف يشعر؟","خجول"],["🪑","ينتظر طويلًا ولا يوجد شيء يفعله. كيف يشعر؟","ملول"],["🏆","فاز فريقه في المباراة. كيف يشعر؟","سعيد"],["🐶","ضاع كلبه الصغير. كيف يشعر؟","حزين"]];
+const fe=n=>F.find(f=>f[1]===n)[0];
+KV.quiz({modes:{face:"ما هذا الشعور؟",story:"مواقف"},modeKey:"kvEmoMode",make:m=>m==="face"
+ ?KV.shuffle(F).slice(0,10).map(f=>({pic:f[0],q:"كيف يشعر؟",choices:KV.shuffle([{e:f[0],t:f[1],ok:true},...KV.shuffle(F.filter(x=>x!==f)).slice(0,2).map(x=>({e:x[0],t:x[1],ok:false}))]),ans:`يشعر بأنه ${f[1]}`,sub:"قلّد هذا الوجه في المرآة 🪞 ومتى تشعر أنت بذلك؟"}))
+ :KV.shuffle(S).slice(0,10).map(s=>({pic:s[0],q:s[1],choices:KV.shuffle([{e:fe(s[2]),t:s[2],ok:true},...KV.shuffle(F.filter(x=>x[1]!==s[2])).slice(0,2).map(x=>({e:x[0],t:x[1],ok:false}))]),ans:s[2],ansEmoji:fe(s[2]),sub:"ماذا يمكنه أن يفعل ليشعر بتحسن؟ 💬"}))});
+KV.bumpPlay("emotions");
+</script>
+</body></html>

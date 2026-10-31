@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ألعاب النطق</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/common.css">
+<style></style></head><body>
+<main><div id="qz"></div></main>
+
+<script src="assets/common.js"></script>
+<script>KV.header({title:"وظائف الأشياء",sub:"ماذا نفعل بهذا الشيء؟",icon:"✂️"});
+const D=[["✂️","المقص","نقص الورق","📄"],["🥄","الملعقة","نأكل الشوربة","🥣"],["🪮","المشط","نمشط الشعر","💇"],["🪥","فرشاة الأسنان","ننظف الأسنان","🦷"],["✏️","القلم","نكتب","📝"],["☕","الكوب","نشرب","🥤"],["🛏️","السرير","ننام","😴"],["☂️","المظلة","نحمي أنفسنا من المطر","🌧️"],["🔑","المفتاح","نفتح الباب","🚪"],["📱","الهاتف","نتصل بالناس","🗣️"],["🧹","المكنسة","ننظف الأرض","✨"],["🧊","الثلاجة","نحفظ الطعام باردًا","🥶"],["👓","النظارة","نرى بوضوح","👀"],["🧼","الصابون","نغسل أيدينا","🙌"],["🪑","الكرسي","نجلس","🧍"],["🔨","المطرقة","ندق المسمار","🔩"],["⌚","الساعة","نعرف الوقت","⏰"],["👟","الحذاء","نحمي أقدامنا","🦶"],["🧽","الإسفنجة","نغسل الصحون","🍽️"],["🖍️","الألوان","نلوّن الرسم","🎨"],["🚿","الدش","نستحم","🛁"],["🔦","المصباح اليدوي","نرى في الظلام","🌑"]];
+KV.quiz({modes:{of:"ماذا نفعل به؟",fo:"ماذا نستخدم؟"},modeKey:"kvOFmode",make:mode=>KV.shuffle(D).slice(0,10).map(c=>{const opts=KV.shuffle([c,...KV.shuffle(D.filter(x=>x!==c)).slice(0,2)]);
+ return mode==="of"?{pic:c[0],q:`ماذا نفعل ب${c[1]}؟`,choices:opts.map(o=>({e:o[3],t:o[2],ok:o===c})),ans:`ب${c[1]} ${c[2]}`,ansEmoji:c[0]+c[3],sub:"قل الجملة كاملة 🗣️"}
+  :{pic:c[3],q:`ماذا نستخدم لكي ${c[2]}؟`,choices:opts.map(o=>({e:o[0],t:o[1],ok:o===c})),ans:`نستخدم ${c[1]} لكي ${c[2]}`,ansEmoji:c[0]+c[3],sub:"قل الجملة كاملة 🗣️"};})});
+KV.bumpPlay("object-function");
+</script>
+</body></html>
