@@ -1,0 +1,72 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Prepare web files
+        run: |
+          mkdir -p www
+          cp -r *.html assets icons manifest.json www/
+
+      - name: Create Android project (Capacitor)
+        run: |
+          npm init -y
+          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor-community/text-to-speech@4
+          npx cap init "Speech Games" com.alisherif.speechlang --web-dir=www
+          npx cap add android
+          npx cap sync android
+
+      - name: App name, permissions and Arabic voice access
+        run: |
+          S=android/app/src/main/res/values/strings.xml
+          sed -i 's#<string name="app_name">.*</string>#<string name="app_name">ألعاب النطق</string>#' $S
+          sed -i 's#<string name="title_activity_main">.*</string>#<string name="title_activity_main">ألعاب النطق</string>#' $S
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i 's#<uses-permission android:name="android.permission.INTERNET" />#&\n    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <queries><intent><action android:name="android.intent.action.TTS_SERVICE" /></intent></queries>#' $M
+
+      - name: App icon
+        continue-on-error: true
+        run: |
+          mkdir -p appicon
+          cp icons/icon-1024.png appicon/logo.png
+          npx @capacitor/assets@3 generate --android --assetPath appicon --iconBackgroundColor "#e2683c" --splashBackgroundColor "#fdf6e9"
+
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+          cp app/build/outputs/apk/debug/app-debug.apk ../speech-games.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: speech-games-apk
+          path: speech-games.apk
+
+      - name: Publish APK in Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: ألعاب النطق – نسخة ${{ github.run_number }}
+          files: speech-games.apk
+          make_latest: true
