@@ -14,6 +14,9 @@ const IMG=id=>`https://static.arasaac.org/pictograms/${id}/${id}_300.png`;
 const EMO=/(?:\p{Extended_Pictographic}|\p{Regional_Indicator})(?:\uFE0F|\u20E3|\p{Emoji_Modifier}|\u200D\p{Extended_Pictographic}\uFE0F?)*/gu;
 const HAS=/\p{Extended_Pictographic}/u;
 const key=e=>e.replace(/\uFE0F/g,"");
+const FACE=/[\u{1F600}-\u{1F64F}\u{1F910}-\u{1F92F}\u{1F970}-\u{1F97F}\u{1F9D0}\u{1FAE0}-\u{1FAE8}\u{1F44D}\u{1F44E}\u{2639}\u{263A}]/u;
+const PAGE=(location.pathname.split("/").pop()||"index.html").replace(".html","");
+const OFF_PAGES=["emotions","yes-no","index"];
 
 /* ---------- style + credit ---------- */
 const st=document.createElement("style");
@@ -24,8 +27,7 @@ st.textContent=`.kvpic{display:inline-block;line-height:1;vertical-align:middle}
 document.head.appendChild(st);
 
 /* ---------- emoji -> Arabic word for pictures that have no word next to them ---------- */
-const EXTRA=("🔥 نار,🚒 سيارة إطفاء,🤒 مريض,💊 دواء,📚 كتب,✏️ قلم,✈️ طائرة,☁️ سحابة,🍳 مقلاة,🍲 طعام,🌾 قمح,🚜 جرار,🚦 إشارة مرور,🚓 سيارة شرطة,🚗 سيارة,🔧 مفتاح ربط,🚀 صاروخ,🌕 قمر,🦷 سن,🪥 فرشاة أسنان,📒 دفتر,🥣 وعاء,😋 لذيذ,✂️ مقص,📄 ورقة,🌧️ مطر,☔ مظلة,☂️ مظلة,✨ نظيف,🐄 بقرة,🥛 حليب,🐝 نحلة,🌸 زهرة,🥶 بارد,❄️ ثلج,🐒 قرد,🌴 نخلة,🌙 قمر,😴 نوم,🐟 سمكة,🌊 بحر,🐦 عصفور,🪺 عش,🎒 حقيبة,🩺 طبيب,🥘 طبخ,🐫 جمل,☀️ شمس,🛒 سوق,🍎 تفاحة,🧼 صابون,🛁 حمام,🛏️ سرير,🎂 كعكة,🎁 هدية,🧥 معطف,🧣 وشاح,🌅 صباح,🙌 يدين,🏖️ شاطئ,🍦 مثلجات,🌟 نجمة,⭐ نجمة,🕌 مسجد,🍔 طعام,🥤 عصير,💧 ماء,😢 حزين,🤕 جرح,🕶️ نظارة شمسية,🚑 سيارة إسعاف,🏥 مستشفى,💡 مصباح,😊 سعيد,🏫 مدرسة,🚌 حافلة,🐍 ثعبان,🌿 عشب,👋 تحية,🦘 كنغر,🧊 ثلج,🕯️ شمعة,📱 هاتف,☎️ هاتف,🐶 كلب,🐱 قطة,🍌 موزة,⚽ كرة,🏠 بيت,🌳 شجرة,🐘 فيل,🦁 أسد,🍕 بيتزا,👟 حذاء,📖 كتاب,🐰 أرنب,🍋 ليمون,🍬 حلوى,🐜 نملة,🦒 زرافة,🐢 سلحفاة,🪮 مشط,☕ كوب,🔑 مفتاح,🧹 مكنسة,👓 نظارة,🪑 كرسي,🔨 مطرقة,⌚ ساعة,🧽 إسفنجة,🖍️ ألوان,🚿 دش,🔦 مصباح,📝 كتابة,💇 شعر,🗣️ كلام,🦶 قدم,🍽️ صحن,🎨 رسم,🌑 ظلام,👀 عيون,🔩 مسمار,⏰ منبه,🐇 أرنب,🐁 فأر,🚪 باب,🔒 قفل,💩 متسخ,⬆️ فوق,⬇️ تحت,🫙 فارغ,🏜️ صحراء,🏋️ ثقيل,🪶 ريشة,🔊 صوت عال,🔈 صوت منخفض,👴 جد,👶 طفل,🥵 حار,😀 سعيد,😠 غاضب,😨 خائف,😲 متفاجئ,😳 خجول,🤢 مشمئز,🥱 ملل,😌 هادئ,🤩 متحمس,💔 مكسور,⛈️ عاصفة,🧱 طوب,🎢 مدينة الملاهي,🏆 كأس,🍉 بطيخ,🐉 تنين,🐲 تنين,👾 وحش,🦈 قرش,🐊 تمساح,📦 صندوق,🐻 دب,🦊 ثعلب,👦 ولد,👧 بنت,🧙 ساحر,👑 ملك,🤖 روبوت,👵 جدة,🏰 قلعة,🏔️ جبل,🗝️ مفتاح,🗺️ خريطة,🥚 بيضة,🎈 بالون,💎 جوهرة,🪄 عصا سحرية,📜 رسالة,🌪️ إعصار,🤝 صديق,🍰 كعكة,🌈 قوس قزح,🐾 آثار أقدام,🍄 فطر,🐸 ضفدع,🌶️ فلفل,🧀 جبن,🦴 عظم,🍯 عسل,🌱 نبتة,🌻 زهرة,🚰 صنبور,🧻 منديل,🔪 سكين,⛄ رجل الثلج,🐛 يرقة,🍂 ورقة شجر,🦋 فراشة,✍️ كتابة,✉️ ظرف,📮 صندوق بريد,📬 بريد,🎫 تذكرة,🚉 محطة,🚆 قطار,🏙️ مدينة,👕 قميص,🍊 برتقال,👨‍🍳 طباخ,🐱 قطة,👩 امرأة,🌞 شمس,🏟️ ملعب,👨‍🏫 معلم,🧒 طفل,👨‍🚒 رجل إطفاء,👩‍⚕️ طبيبة,🧑‍🌾 مزارع,🥕 جزرة,🚲 دراجة,🏞️ حديقة,🧸 دمية,🐭 فأر,🍪 كعك,🐱 قطة,🌷 زهرة,🪨 صخرة,🌲 شجرة,🪵 خشب,🌼 زهرة,🪸 مرجان,🐚 صدفة,🫧 فقاعة,⚓ مرساة,🦀 سلطعون,🐠 سمكة,🪼 قنديل البحر,🪐 كوكب,☄️ نيزك,🛰️ قمر صناعي,🌍 الأرض,🛸 صحن طائر,🛋️ أريكة,🖼️ صورة,🪴 نبتة,🕰️ ساعة,🧺 سلة,🪟 نافذة,📍 مكان").split(",").map(x=>{const i=x.indexOf(" ");return [x.slice(0,i),x.slice(i+1)];});
-
+const EXTRA=[];
 const LETTERS={};
 if(typeof KV_LETTERS!=="undefined")for(const L in KV_LETTERS)for(const p in KV_LETTERS[L].lists)KV_LETTERS[L].lists[p].forEach(({w,e})=>{const k=key(e);if(!LETTERS[k])LETTERS[k]=w;});
 const EXTRA_MAP={};EXTRA.forEach(([e,w])=>{const k=key(e);if(!EXTRA_MAP[k])EXTRA_MAP[k]=w;});
@@ -38,7 +40,7 @@ const dictWord=e=>{const k=key(e);return pickers()[k]||learned[k]||EXTRA_MAP[k]|
 const nWords=s=>s.trim().split(/\s+/).filter(Boolean).length;
 
 /* ---------- ARASAAC lookup with cache ---------- */
-const CK="kvPicCache";let cache={};try{cache=JSON.parse(localStorage.getItem(CK)||"{}");}catch(e){}
+const CK="kvPicCache2";let cache={};try{cache=JSON.parse(localStorage.getItem(CK)||"{}");}catch(e){}
 let saveT;const saveCache=()=>{clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(CK,JSON.stringify(cache));}catch(e){}},400);};
 const inflight={},queue=[];let active=0;
 function run(){while(active<4&&queue.length){const job=queue.shift();active++;job().finally(()=>{active--;run();});}}
@@ -77,10 +79,14 @@ function contextFor(p){
  const t=[...par.children].find(c=>c!==p&&c.classList.contains("t"));
  if(t){const s=t.textContent.trim();if(s&&nWords(s)<=3)return s;}
  return null;}
+const GROUP=".qz-ch,.choices,#choices,.grid,.board,.snacks,.shelf,.chips,.doors,.scene,.slots,.pool";
+function revertGroup(sp){const g=sp.closest(GROUP);if(!g)return;g.dataset.kvemoji="1";g.querySelectorAll(".kvpic").forEach(x=>{x.classList.remove("on");x.textContent=x.dataset.e||x.textContent;});}
 function swap(sp,word){
- lookup(word).then(ent=>{if(!ent.ids.length||!sp.isConnected)return;const id=ent.ids[ent.i%ent.ids.length];
+ lookup(word).then(ent=>{if(!sp.isConnected)return;const g=sp.closest(GROUP);
+  if(!ent.ids.length||(g&&g.dataset.kvemoji)){revertGroup(sp);return;}const id=ent.ids[ent.i%ent.ids.length];
   const im=new Image();im.alt=word;im.referrerPolicy="no-referrer";im.draggable=false;
-  im.onload=()=>{if(!sp.isConnected)return;sp.textContent="";sp.appendChild(im);sp.classList.add("on");};
+  im.onerror=()=>revertGroup(sp);
+  im.onload=()=>{if(!sp.isConnected)return;const gg=sp.closest(GROUP);if(gg&&gg.dataset.kvemoji)return;sp.textContent="";sp.appendChild(im);sp.classList.add("on");};
   im.src=IMG(id);});}
 function proc(t){
  const s=t.nodeValue;if(!s||!HAS.test(s))return;
@@ -91,13 +97,13 @@ function proc(t){
  if(rest){ if(ems.length===1&&ems[0].index===s.search(/\S/)&&nWords(rest)<=3&&!/[!؟?]/.test(rest))ctx=rest;else return; }
  else if(ems.length===1)ctx=contextFor(p);
  const frag=document.createDocumentFragment();let last=0,any=false;
- for(const m of ems){frag.append(s.slice(last,m.index));const em=m[0],w=ctx||dictWord(em);
-  if(w){const sp=document.createElement("span");sp.className="kvpic";sp.dataset.w=w;sp.textContent=em;frag.append(sp);if(ctx)learned[key(em)]=w;swap(sp,w);any=true;}
+ for(const m of ems){frag.append(s.slice(last,m.index));const em=m[0],w=FACE.test(em)?null:(ctx||(ems.length===1?dictWord(em):null));
+  if(w){const sp=document.createElement("span");sp.className="kvpic";sp.dataset.w=w;sp.dataset.e=em;sp.textContent=em;frag.append(sp);if(ctx)learned[key(em)]=w;swap(sp,w);any=true;}
   else frag.append(em);
   last=m.index+em.length;}
  frag.append(s.slice(last));if(any)t.replaceWith(frag);}
 function scan(n){
- if(!S.pics||!n)return;
+ if(!S.pics||!n||OFF_PAGES.includes(PAGE))return;
  if(n.nodeType===3){proc(n);return;}
  if(n.nodeType!==1||n.closest&&n.closest(".kvpic"))return;
  if(n.id==="kvSettings")addToggle();
@@ -108,7 +114,7 @@ function scan(n){
 const ft=CanvasRenderingContext2D.prototype.fillText;
 CanvasRenderingContext2D.prototype.fillText=function(text,x,y,...r){
  if(S.pics&&typeof text==="string"&&text.length<=8&&HAS.test(text)&&!text.replace(EMO,"").trim()){
-  const w=dictWord(text);
+  const w=FACE.test(text)?null:dictWord(text);
   if(w){const im=imageFor(w,()=>{if(document.getElementById("wheel")&&typeof window.draw==="function")try{window.draw();}catch(e){}});
    if(im){const m=/(\d+(?:\.\d+)?)px/.exec(this.font),sz=(m?+m[1]:60)*1.2;
     this.save();this.fillStyle="#fff";this.beginPath();if(this.roundRect)this.roundRect(x-sz/2,y-sz/2,sz,sz,sz*.18);else this.rect(x-sz/2,y-sz/2,sz,sz);this.fill();
@@ -132,7 +138,7 @@ function addPopBtn(){const pop=document.getElementById("kvPop");if(!pop||pop.que
   KV.toast("✅ سيتم استخدام هذه الصورة لهذه الكلمة دائمًا");};}
 
 /* ---------- start ---------- */
-if(S.pics){
+if(S.pics&&!OFF_PAGES.includes(PAGE)){
  const cr=document.createElement("div");cr.className="kv-credit";
  cr.innerHTML=`الرسوم التوضيحية: سيرجيو بالاو – <a href="https://arasaac.org" target="_blank" rel="noopener">ARASAAC</a> (حكومة أراغون) – رخصة CC BY-NC-SA`;
  document.body.appendChild(cr);
