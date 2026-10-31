@@ -207,3 +207,4 @@ function bumpPlay(id){try{const p=JSON.parse(localStorage.getItem("kvPlays")||"{
 
 return {$,shuffle,pick,S,save,toast,sfx,speak,stopSpeech,record,hasRec,delRec,addStar,confetti,header,popup,showResume,hideResume,quiz,wordPicker,savedWords,bindClose,applyTheme,bumpPlay};
 })();
+(function(){var s=document.createElement("script");s.src="assets/pictures-patch.js";document.head.appendChild(s);})();
